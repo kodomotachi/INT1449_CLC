@@ -184,3 +184,5 @@ app/src/main/
 ## Credits
 Designed based on MIUI Weather app reference screenshots.
 
+
+

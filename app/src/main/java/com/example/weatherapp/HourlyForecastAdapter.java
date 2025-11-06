@@ -57,3 +57,5 @@ public class HourlyForecastAdapter extends RecyclerView.Adapter<HourlyForecastAd
     }
 }
 
+
+

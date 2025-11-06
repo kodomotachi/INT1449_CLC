@@ -31,6 +31,11 @@
             android:paddingBottom="20dp">
 
             <!-- Top Bar -->
+
+            <!-- Location Permission -->
+
+            <!-- Current Temperature -->
+
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -40,45 +45,43 @@
                     android:id="@+id/tvLocationName"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_alignParentStart="true"
                     android:text="Binh Tan"
-                    android:textSize="24sp"
                     android:textColor="@color/white"
-                    android:textStyle="bold"
-                    android:layout_alignParentStart="true"/>
+                    android:textSize="24sp"
+                    android:textStyle="bold" />
 
                 <ImageButton
                     android:id="@+id/btnAdd"
                     android:layout_width="48dp"
                     android:layout_height="48dp"
-                    android:src="@drawable/ic_add"
-                    android:background="@android:color/transparent"
                     android:layout_toStartOf="@id/btnMenu"
-                    android:contentDescription="Add location"/>
+                    android:background="@android:color/transparent"
+                    android:contentDescription="Add location"
+                    android:src="@drawable/ic_add" />
 
                 <ImageButton
                     android:id="@+id/btnMenu"
                     android:layout_width="48dp"
                     android:layout_height="48dp"
-                    android:src="@drawable/ic_menu"
-                    android:background="@android:color/transparent"
                     android:layout_alignParentEnd="true"
-                    android:contentDescription="Menu"/>
+                    android:background="@android:color/transparent"
+                    android:contentDescription="Menu"
+                    android:src="@drawable/ic_menu" />
 
             </RelativeLayout>
 
-            <!-- Location Permission -->
             <TextView
                 android:id="@+id/tvLocationPermission"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/allow_location_access"
-                android:textSize="14sp"
-                android:textColor="#CCFFFFFF"
+                android:layout_marginBottom="40dp"
                 android:drawableEnd="@android:drawable/ic_menu_directions"
                 android:drawablePadding="8dp"
-                android:layout_marginBottom="40dp"/>
+                android:text="@string/allow_location_access"
+                android:textColor="#CCFFFFFF"
+                android:textSize="14sp" />
 
-            <!-- Current Temperature -->
             <TextView
                 android:id="@+id/tvCurrentTemp"
                 android:layout_width="wrap_content"
