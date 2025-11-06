@@ -4,7 +4,7 @@
             "outputFile": "com.example.weatherapp-mergeDebugResources-33:/values-watch-v21/values-watch-v21.xml",
             "map": [
                 {
-                    "source": "C:\\Users\\qwert\\.gradle\\caches\\8.13\\transforms\\9fc6d4f31928c96985f70a5986d93afa\\transformed\\appcompat-1.7.1\\res\\values-watch-v21\\values-watch-v21.xml",
+                    "source": "/Users/kodomotachi/.gradle/caches/8.13/transforms/9fc6d4f31928c96985f70a5986d93afa/transformed/appcompat-1.7.1/res/values-watch-v21/values-watch-v21.xml",
                     "from": {
                         "startLines": "2,6,10",
                         "startColumns": "4,4,4",
