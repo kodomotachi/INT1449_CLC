@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="16dp"
+    android:gravity="center"
+    android:background="@drawable/hourly_item_background">
+
+    <TextView
+        android:id="@+id/tvHourlyTemp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="30°"
+        android:textSize="18sp"
+        android:textColor="@color/text_dark"
+        android:textStyle="bold"
+        android:layout_marginBottom="8dp"/>
+
+    <ImageView
+        android:id="@+id/ivHourlyIcon"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
+        android:src="@drawable/ic_cloud"
+        android:layout_marginBottom="8dp"
+        android:contentDescription="Weather icon"/>
+
+    <TextView
+        android:id="@+id/tvHourlyWind"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Force 2"
+        android:textSize="12sp"
+        android:textColor="@color/text_gray"
+        android:layout_marginBottom="8dp"/>
+
+    <TextView
+        android:id="@+id/tvHourlyTime"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Now"
+        android:textSize="12sp"
+        android:textColor="@color/text_gray"/>
+
+</LinearLayout>
