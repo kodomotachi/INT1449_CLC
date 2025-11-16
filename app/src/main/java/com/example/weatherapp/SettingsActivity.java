@@ -55,42 +55,41 @@ public class SettingsActivity extends AppCompatActivity {
         switchNightUpdate = findViewById(R.id.switchNightUpdate);
         RelativeLayout layoutTemperatureUnits = findViewById(R.id.layoutTemperatureUnits);
         RelativeLayout layoutWindSpeedUnits = findViewById(R.id.layoutWindSpeedUnits);
-        RelativeLayout layoutFeedback = findViewById(R.id.layoutFeedback);
-        RelativeLayout layoutPrivacy = findViewById(R.id.layoutPrivacy);
 
         btnBack.setOnClickListener(v -> finish());
 
         layoutTemperatureUnits.setOnClickListener(v -> showTemperatureUnitDialog());
         layoutWindSpeedUnits.setOnClickListener(v -> showWindSpeedUnitDialog());
-        
-        layoutFeedback.setOnClickListener(v -> 
-            Toast.makeText(this, "Feedback", Toast.LENGTH_SHORT).show());
-        
-        layoutPrivacy.setOnClickListener(v -> 
-            Toast.makeText(this, "Privacy", Toast.LENGTH_SHORT).show());
     }
 
     private void loadSavedSettings() {
-        // Load temperature unit
+        // Load temperature unit (persistent - saved from previous session)
         String tempUnit = sharedPreferences.getString(KEY_TEMP_UNIT, TEMP_CELSIUS);
         updateTemperatureUnitDisplay(tempUnit);
 
-        // Load wind speed unit
+        // Load wind speed unit (persistent - saved from previous session)
         String windUnit = sharedPreferences.getString(KEY_WIND_UNIT, WIND_BEAUFORT);
         updateWindSpeedUnitDisplay(windUnit);
 
-        // Load night update setting
-        boolean nightUpdateEnabled = sharedPreferences.getBoolean(KEY_NIGHT_UPDATE, false);
-        switchNightUpdate.setChecked(nightUpdateEnabled);
+        // Always disable night update when opening app (as per requirement)
+        // User must manually enable it each time they open settings
+        switchNightUpdate.setChecked(false);
+        
+        // Also save the disabled state
+        sharedPreferences.edit().putBoolean(KEY_NIGHT_UPDATE, false).apply();
+        
+        // Cancel any scheduled alarms
+        cancelNightUpdate();
     }
 
     private void setupClickListeners() {
         switchNightUpdate.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            sharedPreferences.edit().putBoolean(KEY_NIGHT_UPDATE, isChecked).apply();
+            // Note: Night update setting is NOT saved to SharedPreferences
+            // It always starts as disabled when opening the app
             
             if (isChecked) {
                 scheduleNightUpdate();
-                Toast.makeText(this, "Night update enabled", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "Night update enabled for this session", Toast.LENGTH_SHORT).show();
             } else {
                 cancelNightUpdate();
                 Toast.makeText(this, "Night update disabled", Toast.LENGTH_SHORT).show();
@@ -108,8 +107,17 @@ public class SettingsActivity extends AppCompatActivity {
         builder.setTitle(R.string.select_temperature_unit);
         builder.setSingleChoiceItems(options, checkedItem, (dialog, which) -> {
             String selectedUnit = (which == 0) ? TEMP_CELSIUS : TEMP_FAHRENHEIT;
+            
+            // Save to SharedPreferences (will persist across app restarts)
             sharedPreferences.edit().putString(KEY_TEMP_UNIT, selectedUnit).apply();
+            
+            // Update display
             updateTemperatureUnitDisplay(selectedUnit);
+            
+            // Show confirmation
+            String unitName = (which == 0) ? "Celsius" : "Fahrenheit";
+            Toast.makeText(this, "Temperature unit changed to " + unitName, Toast.LENGTH_SHORT).show();
+            
             dialog.dismiss();
         });
         builder.setNegativeButton(R.string.cancel, null);
@@ -132,19 +140,31 @@ public class SettingsActivity extends AppCompatActivity {
         builder.setTitle(R.string.select_wind_speed_unit);
         builder.setSingleChoiceItems(options, checkedItem, (dialog, which) -> {
             String selectedUnit;
+            String unitName;
             switch (which) {
                 case 1:
                     selectedUnit = WIND_KMH;
+                    unitName = "km/h";
                     break;
                 case 2:
                     selectedUnit = WIND_MS;
+                    unitName = "m/s";
                     break;
                 default:
                     selectedUnit = WIND_BEAUFORT;
+                    unitName = "Beaufort scale";
                     break;
             }
+            
+            // Save to SharedPreferences (will persist across app restarts)
             sharedPreferences.edit().putString(KEY_WIND_UNIT, selectedUnit).apply();
+            
+            // Update display
             updateWindSpeedUnitDisplay(selectedUnit);
+            
+            // Show confirmation
+            Toast.makeText(this, "Wind speed unit changed to " + unitName, Toast.LENGTH_SHORT).show();
+            
             dialog.dismiss();
         });
         builder.setNegativeButton(R.string.cancel, null);
