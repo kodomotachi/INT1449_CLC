@@ -1,32 +1,45 @@
 package com.example.weatherapp.model;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
+import android.content.Context;
+
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
+
 public class WeatherDataAPI {
-    public static String getJsonFromAPI(String apiUrl) throws Exception {
-        URL url = new URL(apiUrl);
-        HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-        connection.setRequestMethod("GET");
-        connection.setRequestProperty("Accept", "application/json"); // Request JSON format
 
-        int responseCode = connection.getResponseCode();
+    public static void getData(Context context, String url, ApiCallback callback) {
+        RequestQueue queue = Volley.newRequestQueue(context);
+        StringRequest request = new StringRequest(
+                Request.Method.GET,
+                url,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        callback.onSuccess(response);
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        callback.onError(error.toString());
+                    }
+                }
+        );
 
-        // ACCEPT state
-        if (responseCode == HttpURLConnection.HTTP_OK) {
-            BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-            String inputLine;
-            StringBuilder response = new StringBuilder();
+        queue.add(request);
+    }
 
-            while((inputLine = in.readLine()) != null) {
-                response.append(inputLine);
-            }
-
-            in.close();
-            return response.toString();
-        } else {
-            throw new RuntimeException("Failed to get JSON from API. Response Code: " + responseCode);
-        }
+    public interface ApiCallback {
+        void onSuccess(String response);
+        void onError(String error);
     }
 }
+
+/*
+* Wanna call API to get data, just use method getData with those parameters to get data u want
+* "context" is
+* */
