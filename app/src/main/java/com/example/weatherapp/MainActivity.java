@@ -3,6 +3,7 @@ package com.example.weatherapp;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -17,6 +18,11 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.example.weatherapp.model.LocationService;
+import com.example.weatherapp.model.NominatimCallback;
+
+import org.json.JSONArray;
 
 import java.util.ArrayList;
 import java.util.List;

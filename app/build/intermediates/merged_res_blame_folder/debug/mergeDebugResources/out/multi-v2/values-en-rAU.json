@@ -4,7 +4,7 @@
             "outputFile": "com.example.weatherapp-mergeDebugResources-33:/values-en-rAU/values-en-rAU.xml",
             "map": [
                 {
-                    "source": "C:\\Users\\qwert\\.gradle\\caches\\8.13\\transforms\\9fc6d4f31928c96985f70a5986d93afa\\transformed\\appcompat-1.7.1\\res\\values-en-rAU\\values-en-rAU.xml",
+                    "source": "/Users/kodomotachi/.gradle/caches/8.13/transforms/2df328af40ce069da67f67a13ca7f0bb/transformed/appcompat-1.7.1/res/values-en-rAU/values-en-rAU.xml",
                     "from": {
                         "startLines": "2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29",
                         "startColumns": "4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4",
@@ -21,7 +21,7 @@
                     }
                 },
                 {
-                    "source": "C:\\Users\\qwert\\.gradle\\caches\\8.13\\transforms\\b8892a28d34db9040615d0cac9baabc9\\transformed\\core-1.13.0\\res\\values-en-rAU\\values-en-rAU.xml",
+                    "source": "/Users/kodomotachi/.gradle/caches/8.13/transforms/034f68fd4b3f07fca2429d6e26070c81/transformed/core-1.13.0/res/values-en-rAU/values-en-rAU.xml",
                     "from": {
                         "startLines": "2,3,4,5,6,7,8,9",
                         "startColumns": "4,4,4,4,4,4,4,4",

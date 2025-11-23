@@ -1,6 +1,7 @@
 package com.example.weatherapp.model;
 
 import android.content.Context;
+import android.util.Log;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -8,6 +9,8 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+
+import org.json.JSONArray;
 
 public class WeatherDataAPI {
 
@@ -39,7 +42,29 @@ public class WeatherDataAPI {
     }
 }
 
-/*
-* Wanna call API to get data, just use method getData with those parameters to get data u want
-* "context" is
-* */
+// how to use in MainActivity.java
+
+//LocationService locationService = new LocationService();
+//String city = "Ha Noi";
+//
+//        locationService.searchLocation(this, city, new NominatimCallback() {
+//    @Override
+//    public void onSuccess(JSONArray result) {
+//        try {
+//            org.json.JSONObject place = result.getJSONObject(0);
+//            String displayName = place.getString("display_name");
+//            String lat = place.getString("lat");
+//            String lon = place.getString("lon");
+//            Log.d("API_RESULT", "Name: " + displayName);
+//            Log.d("API_RESULT", "Latitude: " + lat);
+//            Log.d("API_RESULT", "Longitude: " + lon);
+//        } catch(Exception e) {
+//            e.printStackTrace();
+//        }
+//    }
+//
+//    @Override
+//    public void onError(String message) {
+//        Log.e("API_ERROR", message);
+//    }
+//});
