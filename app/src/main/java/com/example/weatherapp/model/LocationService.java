@@ -19,7 +19,7 @@ import java.util.Map;
 
 public class LocationService {
     public void searchLocation(Context context, String location, final NominatimCallback callback) {
-        String encodedLocation = "";
+        String encodedLocation;
 
         try {
             encodedLocation = URLEncoder.encode(location, "UTF-8");
@@ -62,3 +62,31 @@ public class LocationService {
         queue.add(jsonArrayRequest);
     }
 }
+
+
+// how to use in MainActivity.java
+
+//LocationService locationService = new LocationService();
+//String city = "Ha Noi";
+//
+//        locationService.searchLocation(this, city, new NominatimCallback() {
+//    @Override
+//    public void onSuccess(JSONArray result) {
+//        try {
+//            org.json.JSONObject place = result.getJSONObject(0);
+//            String displayName = place.getString("display_name");
+//            String lat = place.getString("lat");
+//            String lon = place.getString("lon");
+//            Log.d("API_RESULT", "Name: " + displayName);
+//            Log.d("API_RESULT", "Latitude: " + lat);
+//            Log.d("API_RESULT", "Longitude: " + lon);
+//        } catch(Exception e) {
+//            e.printStackTrace();
+//        }
+//    }
+//
+//    @Override
+//    public void onError(String message) {
+//        Log.e("API_ERROR", message);
+//    }
+//});
