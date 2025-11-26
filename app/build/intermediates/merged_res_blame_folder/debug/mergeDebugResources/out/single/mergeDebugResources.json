@@ -60,16 +60,8 @@
         "source": "com.example.weatherapp-main-37:/drawable/ic_launcher_foreground.xml"
     },
     {
-        "merged": "com.example.weatherapp-debug-35:/layout_item_city.xml.flat",
-        "source": "com.example.weatherapp-main-37:/layout/item_city.xml"
-    },
-    {
         "merged": "com.example.weatherapp-debug-35:/mipmap-xxxhdpi_ic_launcher.webp.flat",
         "source": "com.example.weatherapp-main-37:/mipmap-xxxhdpi/ic_launcher.webp"
-    },
-    {
-        "merged": "com.example.weatherapp-debug-35:/layout_fragment_weather_page.xml.flat",
-        "source": "com.example.weatherapp-main-37:/layout/fragment_weather_page.xml"
     },
     {
         "merged": "com.example.weatherapp-debug-35:/drawable_ic_add.xml.flat",
@@ -86,10 +78,6 @@
     {
         "merged": "com.example.weatherapp-debug-35:/mipmap-mdpi_ic_launcher_round.webp.flat",
         "source": "com.example.weatherapp-main-37:/mipmap-mdpi/ic_launcher_round.webp"
-    },
-    {
-        "merged": "com.example.weatherapp-debug-35:/layout_activity_manage_cities.xml.flat",
-        "source": "com.example.weatherapp-main-37:/layout/activity_manage_cities.xml"
     },
     {
         "merged": "com.example.weatherapp-debug-35:/drawable_ic_rain.xml.flat",

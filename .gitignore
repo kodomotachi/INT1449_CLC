@@ -1,0 +1,26 @@
+# Gradle
+.gradle/
+build/
+
+# Android Studio
+.idea/
+*.iml
+
+# Local config
+local.properties
+
+# Log
+*.log
+
+# Generated files
+captures/
+.externalNativeBuild/
+
+# Kotlin/Java
+*.class
+*.jar
+*.war
+*.ear
+
+# Cache
+*.cache

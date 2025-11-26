@@ -4,7 +4,7 @@
             "outputFile": "com.example.weatherapp-mergeDebugResources-33:/values-hdpi-v4/values-hdpi-v4.xml",
             "map": [
                 {
-                    "source": "C:\\Users\\qwert\\.gradle\\caches\\8.13\\transforms\\149577fd2394eb5d52126223f8aad37f\\transformed\\appcompat-1.7.1\\res\\values-hdpi-v4\\values-hdpi-v4.xml",
+                    "source": "/Users/kodomotachi/.gradle/caches/8.13/transforms/2df328af40ce069da67f67a13ca7f0bb/transformed/appcompat-1.7.1/res/values-hdpi-v4/values-hdpi-v4.xml",
                     "from": {
                         "startLines": "2",
                         "startColumns": "4",
