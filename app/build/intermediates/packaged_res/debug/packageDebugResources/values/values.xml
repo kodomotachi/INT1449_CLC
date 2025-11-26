@@ -15,9 +15,15 @@
     <string name="beaufort_scale">Beaufort scale</string>
     <string name="cancel">Cancel</string>
     <string name="celsius">°C</string>
+    <string name="city_added">City added</string>
+    <string name="city_already_exists">City already exists</string>
+    <string name="city_not_found">City not found</string>
     <string name="cloudy">Cloudy</string>
+    <string name="default_city">Default city</string>
     <string name="degree_symbol">°</string>
+    <string name="delete">Delete</string>
     <string name="east">East</string>
+    <string name="enter_location">Enter location</string>
     <string name="fahrenheit">°F</string>
     <string name="feedback">Feedback</string>
     <string name="five_day_forecast">5-day forecast</string>
@@ -25,6 +31,7 @@
     <string name="hpa">hPa</string>
     <string name="humidity">Humidity</string>
     <string name="kilometers_per_hour">km/h</string>
+    <string name="manage_cities">Manage cities</string>
     <string name="meters_per_second">m/s</string>
     <string name="moderate">Moderate</string>
     <string name="north">North</string>
@@ -34,6 +41,7 @@
     <string name="privacy">Privacy</string>
     <string name="rainy">Rainy</string>
     <string name="real_feel">Real feel</string>
+    <string name="search_cities">Search cities</string>
     <string name="select_temperature_unit">Select temperature unit</string>
     <string name="select_wind_speed_unit">Select wind speed unit</string>
     <string name="settings">Settings</string>

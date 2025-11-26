@@ -51,4 +51,14 @@
     <string name="select_temperature_unit">Select temperature unit</string>
     <string name="select_wind_speed_unit">Select wind speed unit</string>
     <string name="cancel">Cancel</string>
+    
+    <!-- Manage Cities -->
+    <string name="manage_cities">Manage cities</string>
+    <string name="enter_location">Enter location</string>
+    <string name="search_cities">Search cities</string>
+    <string name="delete">Delete</string>
+    <string name="default_city">Default city</string>
+    <string name="city_added">City added</string>
+    <string name="city_already_exists">City already exists</string>
+    <string name="city_not_found">City not found</string>
 </resources>

@@ -32,6 +32,12 @@
             android:exported="false"
             android:parentActivityName=".MainActivity"/>
         
+        <!-- Manage Cities Activity -->
+        <activity
+            android:name=".ManageCitiesActivity"
+            android:exported="false"
+            android:parentActivityName=".MainActivity"/>
+        
         <!-- Weather Update Receiver -->
         <receiver
             android:name=".WeatherUpdateReceiver"

@@ -63,33 +63,26 @@ public class SettingsActivity extends AppCompatActivity {
     }
 
     private void loadSavedSettings() {
-        // Load temperature unit (persistent - saved from previous session)
+        // Load temperature unit
         String tempUnit = sharedPreferences.getString(KEY_TEMP_UNIT, TEMP_CELSIUS);
         updateTemperatureUnitDisplay(tempUnit);
 
-        // Load wind speed unit (persistent - saved from previous session)
+        // Load wind speed unit
         String windUnit = sharedPreferences.getString(KEY_WIND_UNIT, WIND_BEAUFORT);
         updateWindSpeedUnitDisplay(windUnit);
 
-        // Always disable night update when opening app (as per requirement)
-        // User must manually enable it each time they open settings
-        switchNightUpdate.setChecked(false);
-        
-        // Also save the disabled state
-        sharedPreferences.edit().putBoolean(KEY_NIGHT_UPDATE, false).apply();
-        
-        // Cancel any scheduled alarms
-        cancelNightUpdate();
+        // Load night update setting
+        boolean nightUpdateEnabled = sharedPreferences.getBoolean(KEY_NIGHT_UPDATE, false);
+        switchNightUpdate.setChecked(nightUpdateEnabled);
     }
 
     private void setupClickListeners() {
         switchNightUpdate.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            // Note: Night update setting is NOT saved to SharedPreferences
-            // It always starts as disabled when opening the app
+            sharedPreferences.edit().putBoolean(KEY_NIGHT_UPDATE, isChecked).apply();
             
             if (isChecked) {
                 scheduleNightUpdate();
-                Toast.makeText(this, "Night update enabled for this session", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "Night update enabled", Toast.LENGTH_SHORT).show();
             } else {
                 cancelNightUpdate();
                 Toast.makeText(this, "Night update disabled", Toast.LENGTH_SHORT).show();
@@ -107,17 +100,8 @@ public class SettingsActivity extends AppCompatActivity {
         builder.setTitle(R.string.select_temperature_unit);
         builder.setSingleChoiceItems(options, checkedItem, (dialog, which) -> {
             String selectedUnit = (which == 0) ? TEMP_CELSIUS : TEMP_FAHRENHEIT;
-            
-            // Save to SharedPreferences (will persist across app restarts)
             sharedPreferences.edit().putString(KEY_TEMP_UNIT, selectedUnit).apply();
-            
-            // Update display
             updateTemperatureUnitDisplay(selectedUnit);
-            
-            // Show confirmation
-            String unitName = (which == 0) ? "Celsius" : "Fahrenheit";
-            Toast.makeText(this, "Temperature unit changed to " + unitName, Toast.LENGTH_SHORT).show();
-            
             dialog.dismiss();
         });
         builder.setNegativeButton(R.string.cancel, null);
@@ -140,31 +124,19 @@ public class SettingsActivity extends AppCompatActivity {
         builder.setTitle(R.string.select_wind_speed_unit);
         builder.setSingleChoiceItems(options, checkedItem, (dialog, which) -> {
             String selectedUnit;
-            String unitName;
             switch (which) {
                 case 1:
                     selectedUnit = WIND_KMH;
-                    unitName = "km/h";
                     break;
                 case 2:
                     selectedUnit = WIND_MS;
-                    unitName = "m/s";
                     break;
                 default:
                     selectedUnit = WIND_BEAUFORT;
-                    unitName = "Beaufort scale";
                     break;
             }
-            
-            // Save to SharedPreferences (will persist across app restarts)
             sharedPreferences.edit().putString(KEY_WIND_UNIT, selectedUnit).apply();
-            
-            // Update display
             updateWindSpeedUnitDisplay(selectedUnit);
-            
-            // Show confirmation
-            Toast.makeText(this, "Wind speed unit changed to " + unitName, Toast.LENGTH_SHORT).show();
-            
             dialog.dismiss();
         });
         builder.setNegativeButton(R.string.cancel, null);

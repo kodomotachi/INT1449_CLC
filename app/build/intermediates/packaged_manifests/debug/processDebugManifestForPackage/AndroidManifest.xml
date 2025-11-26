@@ -49,6 +49,12 @@
             android:exported="false"
             android:parentActivityName="com.example.weatherapp.MainActivity" />
 
+        <!-- Manage Cities Activity -->
+        <activity
+            android:name="com.example.weatherapp.ManageCitiesActivity"
+            android:exported="false"
+            android:parentActivityName="com.example.weatherapp.MainActivity" />
+
         <!-- Weather Update Receiver -->
         <receiver
             android:name="com.example.weatherapp.WeatherUpdateReceiver"
