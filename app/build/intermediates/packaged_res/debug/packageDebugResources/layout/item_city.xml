@@ -3,21 +3,20 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginBottom="12dp"
+    android:layout_margin="8dp"
     app:cardCornerRadius="20dp"
     app:cardElevation="0dp"
-    app:cardBackgroundColor="#4D88C6">
+    app:cardBackgroundColor="#4D7BA5D1">
 
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="20dp">
+        android:padding="16dp">
 
         <LinearLayout
-            android:id="@+id/layoutCityInfo"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_toStartOf="@id/tvCurrentTemp"
+            android:layout_toStartOf="@id/layoutRight"
             android:layout_centerVertical="true"
             android:orientation="vertical">
 
@@ -32,55 +31,62 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Binh Tan"
+                    android:textSize="20sp"
                     android:textColor="@color/white"
-                    android:textSize="22sp"
                     android:textStyle="bold"/>
 
                 <ImageView
                     android:id="@+id/ivLocationPin"
-                    android:layout_width="20dp"
-                    android:layout_height="20dp"
+                    android:layout_width="16dp"
+                    android:layout_height="16dp"
                     android:layout_marginStart="8dp"
                     android:src="@android:drawable/ic_menu_mylocation"
                     android:tint="@color/white"
                     android:visibility="gone"
-                    android:contentDescription="Location pin"/>
+                    android:contentDescription="Default location"/>
 
             </LinearLayout>
 
             <TextView
-                android:id="@+id/tvWeatherInfo"
+                android:id="@+id/tvCityWeather"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Cloudy  30° / 24°"
+                android:textSize="14sp"
                 android:textColor="#CCFFFFFF"
-                android:textSize="16sp"
                 android:layout_marginTop="4dp"/>
 
         </LinearLayout>
 
-        <TextView
-            android:id="@+id/tvCurrentTemp"
+        <LinearLayout
+            android:id="@+id/layoutRight"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentEnd="true"
             android:layout_centerVertical="true"
-            android:text="28°"
-            android:textColor="@color/white"
-            android:textSize="56sp"
-            android:fontFamily="sans-serif-thin"/>
+            android:orientation="horizontal"
+            android:gravity="center_vertical">
 
-        <ImageButton
-            android:id="@+id/btnDeleteCity"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:layout_alignParentEnd="true"
-            android:layout_alignParentTop="true"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:src="@android:drawable/ic_menu_delete"
-            android:tint="#CCFFFFFF"
-            android:visibility="visible"
-            android:contentDescription="Delete"/>
+            <TextView
+                android:id="@+id/tvCityTemp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="28°"
+                android:textSize="42sp"
+                android:textColor="@color/white"
+                android:fontFamily="sans-serif-thin"
+                android:layout_marginEnd="8dp"/>
+
+            <ImageButton
+                android:id="@+id/btnDeleteCity"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:src="@android:drawable/ic_menu_delete"
+                android:tint="@color/white"
+                android:contentDescription="Delete city"/>
+
+        </LinearLayout>
 
     </RelativeLayout>
 

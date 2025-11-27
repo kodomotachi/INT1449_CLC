@@ -1,26 +1,46 @@
 package com.example.weatherapp;
 
 public class City {
+    private int id;
     private String name;
     private String country;
-    private boolean isDefault; // Default city cannot be deleted
     private double latitude;
     private double longitude;
+    private boolean isDefault;
+    
+    // Weather data
+    private String temperature;
+    private String weatherCondition;
+    private String highTemp;
+    private String lowTemp;
 
-    public City(String name, String country, boolean isDefault) {
-        this.name = name;
-        this.country = country;
-        this.isDefault = isDefault;
-        this.latitude = 0.0;
-        this.longitude = 0.0;
+    public City() {
     }
 
-    public City(String name, String country, boolean isDefault, double latitude, double longitude) {
+    public City(String name, String country, double latitude, double longitude) {
         this.name = name;
         this.country = country;
-        this.isDefault = isDefault;
         this.latitude = latitude;
         this.longitude = longitude;
+        this.isDefault = false;
+    }
+
+    public City(int id, String name, String country, double latitude, double longitude, boolean isDefault) {
+        this.id = id;
+        this.name = name;
+        this.country = country;
+        this.latitude = latitude;
+        this.longitude = longitude;
+        this.isDefault = isDefault;
+    }
+
+    // Getters and Setters
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 
     public String getName() {
@@ -39,14 +59,6 @@ public class City {
         this.country = country;
     }
 
-    public boolean isDefault() {
-        return isDefault;
-    }
-
-    public void setDefault(boolean aDefault) {
-        isDefault = aDefault;
-    }
-
     public double getLatitude() {
         return latitude;
     }
@@ -63,8 +75,51 @@ public class City {
         this.longitude = longitude;
     }
 
-    public String getFullName() {
-        return name + ", " + country;
+    public boolean isDefault() {
+        return isDefault;
+    }
+
+    public void setDefault(boolean aDefault) {
+        isDefault = aDefault;
+    }
+
+    public String getTemperature() {
+        return temperature;
+    }
+
+    public void setTemperature(String temperature) {
+        this.temperature = temperature;
+    }
+
+    public String getWeatherCondition() {
+        return weatherCondition;
+    }
+
+    public void setWeatherCondition(String weatherCondition) {
+        this.weatherCondition = weatherCondition;
+    }
+
+    public String getHighTemp() {
+        return highTemp;
+    }
+
+    public void setHighTemp(String highTemp) {
+        this.highTemp = highTemp;
+    }
+
+    public String getLowTemp() {
+        return lowTemp;
+    }
+
+    public void setLowTemp(String lowTemp) {
+        this.lowTemp = lowTemp;
+    }
+
+    public String getDisplayName() {
+        if (country != null && !country.isEmpty()) {
+            return name + ", " + country;
+        }
+        return name;
     }
 }
 

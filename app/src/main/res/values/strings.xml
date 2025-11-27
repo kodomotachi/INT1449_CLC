@@ -56,9 +56,9 @@
     <string name="manage_cities">Manage cities</string>
     <string name="enter_location">Enter location</string>
     <string name="search_cities">Search cities</string>
-    <string name="delete">Delete</string>
-    <string name="default_city">Default city</string>
     <string name="city_added">City added</string>
-    <string name="city_already_exists">City already exists</string>
-    <string name="city_not_found">City not found</string>
+    <string name="city_removed">City removed</string>
+    <string name="cannot_remove_last_city">Cannot remove the last city</string>
+    <string name="city_already_added">City already added</string>
+    <string name="default_city">Default city</string>
 </resources>

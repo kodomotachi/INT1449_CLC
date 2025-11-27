@@ -1,258 +1,301 @@
 # Manage Cities Feature - Documentation
 
-## Tổng quan (Overview)
+## Overview
+The Manage Cities feature allows users to search and add multiple cities to track weather, with one default city that cannot be deleted. Users can swipe left/right on the main screen to view weather for different cities.
 
-Tính năng quản lý thành phố cho phép người dùng:
-- ✅ Tìm kiếm và thêm thành phố mới
-- ✅ Xem danh sách các thành phố đã lưu
-- ✅ Xóa thành phố (trừ thành phố mặc định)
-- ✅ Vuốt ngang để xem thời tiết các thành phố khác nhau
-- ✅ 1 thành phố mặc định không thể xóa
+## Features Implemented
 
-## Tính năng đã triển khai
+### 1. **City Database System**
+- SQLite database to persistently store cities
+- Each city has: ID, Name, Country, Latitude, Longitude, Default flag
+- **Binh Tan, Vietnam** is set as the default city (cannot be deleted)
+- Database auto-creates on first launch
 
-### 1. Manage Cities Activity
+### 2. **Manage Cities Activity**
+- Black-themed interface matching the reference design
+- Search bar to find cities worldwide
+- List of saved cities with weather preview
+- Delete functionality for non-default cities
 
-**Màn hình quản lý thành phố** (`activity_manage_cities.xml`):
-- Thanh tìm kiếm với icon search
-- Danh sách thành phố hiển thị dạng card
-- Mỗi card hiển thị:
-  - Tên thành phố
-  - Thời tiết hiện tại
-  - Nhiệt độ lớn
-  - Icon pin cho thành phố mặc định
-  - Nút xóa (chỉ hiện cho thành phố không phải mặc định)
+#### Search Functionality:
+- Real-time search as you type
+- Searches through 30+ major world cities (sample database)
+- Search by city name or country
+- Dropdown results appear below search bar
+- Tap a result to add city
 
-**Chức năng tìm kiếm**:
-- Gõ tên thành phố vào thanh tìm kiếm
-- Nhấn Enter hoặc nút Search
-- Nếu tìm thấy → Hiện dialog xác nhận thêm
-- Nếu đã tồn tại → Thông báo "City already exists"
-- Nếu không tìm thấy → Thông báo "City not found"
+#### City List Features:
+- Blue gradient cards showing:
+  - City name
+  - Weather condition and high/low temps
+  - Current temperature (large)
+  - Delete button (except for default city)
+- Default city shows location pin icon instead of delete button
+- Cannot delete if only one city remains
 
-**Danh sách thành phố có sẵn**:
-- Singapore
-- Hanoi, Ho Chi Minh City, Da Nang (Vietnam)
-- Bangkok (Thailand)
-- Tokyo (Japan)
-- Seoul (South Korea)
-- Beijing, Shanghai, Hong Kong (China)
-- Kuala Lumpur (Malaysia)
-- Jakarta (Indonesia)
-- Manila (Philippines)
-- New York, Los Angeles (USA)
-- London (UK)
-- Paris (France)
-- Sydney (Australia)
-- Dubai (UAE)
-- Mumbai (India)
+### 3. **Swipeable Main Screen (ViewPager2)**
+- Swipe left/right to view weather for different cities
+- Smooth page transitions with fade effect
+- Each city has its own weather page (Fragment)
+- Top buttons (Add, Menu) overlay all pages
+- Background changes based on weather condition
 
-### 2. ViewPager2 - Swipe Between Cities
+### 4. **World Cities Database**
+Pre-loaded cities include:
 
-**MainActivity với ViewPager2**:
-- Vuốt sang trái/phải để xem thời tiết thành phố khác
-- Tên thành phố ở top bar cập nhật khi đổi trang
-- Vị trí hiện tại được lưu tự động
-- Khi quay lại app, hiển thị thành phố đã xem trước đó
+**Vietnam:**
+- Binh Tan, Hanoi, Ho Chi Minh City, Da Nang, Hue
 
-**WeatherPageFragment**:
-- Mỗi thành phố có một fragment riêng
-- Hiển thị đầy đủ thông tin thời tiết:
-  - Nhiệt độ hiện tại
-  - Tình trạng thời tiết
-  - Dự báo 24 giờ (horizontal scroll)
-  - 6 thẻ thông tin: UV, Humidity, Real Feel, Wind, Sunset, Pressure
+**Southeast Asia:**
+- Singapore, Bangkok, Kuala Lumpur, Jakarta, Manila
 
-### 3. City Manager - Data Storage
+**East Asia:**
+- Tokyo, Seoul, Beijing, Shanghai, Hong Kong, Taipei
 
-**CityManager.java**:
-- Lưu trữ danh sách thành phố bằng SharedPreferences + Gson
-- Quản lý thành phố mặc định (Binh Tan)
-- Lưu vị trí thành phố đang xem
-- Kiểm tra thành phố đã tồn tại
-- Thêm/xóa thành phố
+**Australia & Oceania:**
+- Sydney, Melbourne, Auckland
 
-**City Model**:
-- Tên thành phố
-- Quốc gia
-- Flag mặc định (isDefault)
-- Tọa độ (latitude, longitude)
+**Europe:**
+- London, Paris, Berlin, Rome, Madrid, Moscow
 
-### 4. Navigation
+**North America:**
+- New York, Los Angeles, Chicago, Toronto, Vancouver
 
-**Từ Main Activity**:
-- Nút `+` → Mở ManageCitiesActivity
-- Nút `⋮` → Mở SettingsActivity
+**South America:**
+- São Paulo, Buenos Aires, Rio de Janeiro
 
-**Từ Manage Cities Activity**:
-- Tap vào card thành phố → Quay về Main và hiển thị thành phố đó
-- Nút xóa → Xóa thành phố (có xác nhận)
-- Nút back → Quay về Main
+**Middle East:**
+- Dubai, Tel Aviv, Istanbul
 
-## Cấu trúc File
+## Architecture
 
-### Java Classes:
-```
-com.example.weatherapp/
-├── City.java                     // Model class
-├── CityManager.java              // Storage & management
-├── ManageCitiesActivity.java    // Search & manage cities
-├── CityAdapter.java              // RecyclerView adapter
-├── MainActivity.java             // Main screen with ViewPager2
-├── WeatherPageFragment.java     // Weather page for each city
-└── WeatherPagerAdapter.java     // ViewPager2 adapter
-```
+### Files Created:
 
-### Layouts:
-```
-res/layout/
-├── activity_manage_cities.xml   // Manage cities screen
-├── item_city.xml                // City card item
-├── activity_main.xml            // Main screen with ViewPager2
-└── fragment_weather_page.xml   // Weather fragment
-```
+**Data Models:**
+- `City.java` - City data model with weather properties
+- `CityDatabaseHelper.java` - SQLite database management
 
-## Sử dụng (Usage)
+**Activities:**
+- `ManageCitiesActivity.java` - City management screen with search
 
-### Thêm thành phố mới:
+**Fragments:**
+- `WeatherPageFragment.java` - Individual weather page for each city
 
-1. Mở app → Tap nút `+` ở góc trên bên phải
-2. Nhập tên thành phố (ví dụ: "Singapore")
-3. Nhấn Enter
-4. Tap "Add" trong dialog xác nhận
-5. Thành phố được thêm vào danh sách
+**Layouts:**
+- `activity_manage_cities.xml` - Manage cities screen layout
+- `item_city.xml` - City list item (blue card with delete button)
+- `item_search_result.xml` - Search result item
+- `fragment_weather_page.xml` - Weather page fragment
+- `activity_main.xml` - Updated to use ViewPager2
 
-### Xem thời tiết thành phố khác:
+**Updated:**
+- `MainActivity.java` - Now uses ViewPager2 with FragmentStateAdapter
+- `AndroidManifest.xml` - Added ManageCitiesActivity
+- `build.gradle.kts` - Added ViewPager2 and Fragment dependencies
+- `strings.xml` - Added city management strings
 
-**Cách 1: Vuốt ngang**
-- Từ màn hình chính, vuốt sang trái hoặc phải
-- Thời tiết thành phố khác sẽ hiện ra
-- Tên thành phố ở top cập nhật tự động
+## How It Works
 
-**Cách 2: Chọn từ danh sách**
-- Tap nút `+` → Mở Manage Cities
-- Tap vào card thành phố muốn xem
-- Quay về màn hình chính với thành phố đã chọn
+### Flow 1: Adding a New City
+1. User taps Add (+) button on main screen
+2. ManageCitiesActivity opens
+3. User types city name in search bar (e.g., "Singapore")
+4. Search results appear in dropdown
+5. User taps desired city
+6. City is added to database
+7. Success toast shows "City added"
+8. City appears in list with sample weather data
+9. User returns to main screen
+10. New city page is available by swiping
 
-### Xóa thành phố:
+### Flow 2: Viewing Different Cities
+1. User is on main screen (showing Binh Tan by default)
+2. User swipes left → Shows next city (e.g., Singapore)
+3. User swipes right → Returns to previous city
+4. Each swipe shows complete weather page for that city
+5. Top buttons (Add, Menu) remain accessible on all pages
 
-1. Tap nút `+` → Mở Manage Cities
-2. Tap nút xóa (icon thùng rác) trên card
-3. Xác nhận xóa trong dialog
-4. Thành phố bị xóa khỏi danh sách
+### Flow 3: Deleting a City
+1. User opens Manage Cities
+2. User taps delete (trash) icon on a city card
+3. System checks if city is default → Shows error if default
+4. System checks if it's the last city → Shows error if last
+5. Otherwise, city is deleted from database
+6. List refreshes automatically
+7. Toast shows "City removed"
 
-**Lưu ý**: Thành phố mặc định (có icon pin) không thể xóa!
+## Technical Details
 
-## Kỹ thuật Implementation
-
-### ViewPager2 Setup:
+### ViewPager2 Implementation
 ```java
-// MainActivity.java
-viewPagerWeather = findViewById(R.id.viewPagerWeather);
-cities = cityManager.getCities();
-pagerAdapter = new WeatherPagerAdapter(this, cities);
-viewPagerWeather.setAdapter(pagerAdapter);
-
-// Listen for page changes
-viewPagerWeather.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
-    @Override
-    public void onPageSelected(int position) {
-        updateLocationName(cities.get(position));
-        cityManager.saveCurrentCityIndex(position);
+// MainActivity uses FragmentStateAdapter
+private static class WeatherPagerAdapter extends FragmentStateAdapter {
+    // Creates a fragment for each city
+    public Fragment createFragment(int position) {
+        return WeatherPageFragment.newInstance(cities.get(position));
     }
-});
-```
-
-### City Storage with Gson:
-```java
-// Save cities
-String json = gson.toJson(cities);
-prefs.edit().putString(KEY_CITIES, json).apply();
-
-// Load cities
-String json = prefs.getString(KEY_CITIES, null);
-Type type = new TypeToken<List<City>>(){}.getType();
-List<City> cities = gson.fromJson(json, type);
-```
-
-### Search Implementation:
-```java
-private String[] findCity(String query) {
-    String lowerQuery = query.toLowerCase();
-    for (String[] city : WORLD_CITIES) {
-        if (city[0].toLowerCase().contains(lowerQuery)) {
-            return city; // [cityName, country]
-        }
-    }
-    return null;
 }
 ```
 
-## Dependencies Added
-
-```gradle
-// build.gradle.kts
-implementation(libs.gson)           // For JSON storage
-implementation(libs.viewpager2)     // For swipeable pages
+### Database Structure
+```sql
+CREATE TABLE cities (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT,
+    country TEXT,
+    latitude REAL,
+    longitude REAL,
+    is_default INTEGER DEFAULT 0
+);
 ```
 
-## UI Design
+### Default City Protection
+- Default city has `is_default = 1` in database
+- Delete button hidden for default city
+- Location pin icon shown instead
+- Always appears first in list
 
-### Colors:
-- Background: Black (#000000)
-- City cards: Blue gradient (#4D88C6)
-- Search bar: Dark gray (#333333)
-- Text: White (#FFFFFF)
-- Secondary text: Light gray (#CCFFFFFF)
+### Search Algorithm
+- Case-insensitive matching
+- Searches both city name and country
+- Uses `contains()` for flexible matching
+- Real-time results (no search button needed)
 
-### Layout:
-- Top bar: 56dp height
-- Search bar: 24dp corner radius
-- City cards: 20dp corner radius
-- Padding: 16dp standard
-- Weather cards: Same as homepage (20dp radius)
+## UI/UX Features
 
-## Features Summary
+### Design Elements:
+- **Black background** (#000000)
+- **Blue gradient cards** (#4D7BA5D1) for cities
+- **Semi-transparent white** (#E6FFFFFF) for forecast card
+- **Rounded corners** (20dp) on all cards
+- **White text** for primary content
+- **Gray text** (#808080) for secondary info
 
-✅ **Completed:**
-- Tìm kiếm thành phố từ database
-- Thêm thành phố vào danh sách
-- Xóa thành phố (trừ mặc định)
-- Thành phố mặc định không thể xóa (có icon pin)
-- Vuốt ngang để chuyển thành phố
-- Lưu vị trí thành phố đang xem
-- Tự động quay về thành phố đã xem
-- 20 thành phố có sẵn để tìm kiếm
+### Interactions:
+- Tap search bar → Keyboard appears
+- Type → Results appear instantly
+- Tap result → City added
+- Swipe pages → Smooth transitions
+- Tap delete → Confirmation via system behavior
+- Can't delete default → Toast message
 
-🔄 **Có thể mở rộng:**
-- Thêm API thực để tìm kiếm toàn bộ thành phố thế giới
-- Hiển thị thời tiết thực tế từ API
-- Thêm vị trí GPS hiện tại
-- Sắp xếp thứ tự thành phố (drag & drop)
-- Thêm ảnh nền khác nhau cho mỗi thành phố
+## Integration Points
 
-## Testing
+### With MainActivity:
+- `btnAdd` opens `ManageCitiesActivity`
+- `onResume()` reloads cities when returning
+- Maintains current page position after reload
 
-**Kịch bản test:**
-1. ✅ Thêm thành phố mới
-2. ✅ Thêm thành phố đã tồn tại → Hiện thông báo
-3. ✅ Tìm thành phố không tồn tại → Hiện thông báo
-4. ✅ Xóa thành phố thường
-5. ✅ Xóa thành phố mặc định → Không xóa được
-6. ✅ Vuốt ngang giữa các thành phố
-7. ✅ Tên thành phố cập nhật đúng
-8. ✅ Vị trí được lưu khi thoát app
-9. ✅ Quay lại đúng thành phố đã xem
+### With WeatherPageFragment:
+- Each fragment receives City object
+- Displays city-specific weather data
+- Independent scrolling per page
+- Reuses existing layouts (hourly forecast, info cards)
 
-## Notes
+### With Database:
+- All activities share same `CityDatabaseHelper` instance
+- Database persists across app restarts
+- Thread-safe operations
 
-- Thành phố mặc định: **Binh Tan, Vietnam**
-- Database thành phố: Hardcoded trong `ManageCitiesActivity.WORLD_CITIES`
-- Có thể thêm nhiều thành phố hơn vào database
-- ViewPager2 hỗ trợ swipe mượt mà
-- Dữ liệu được lưu bằng SharedPreferences + Gson (persistent)
+## Future Enhancements
 
----
+### Potential Additions:
+1. **Weather API Integration**
+   - Fetch real weather data for each city
+   - Update on swipe or pull-to-refresh
+   - Background updates
 
-**Tất cả tính năng đã hoàn thành và sẵn sàng sử dụng!** 🎉
+2. **Location Services**
+   - Auto-detect user's location
+   - Add current location as default
+   - GPS-based weather
+
+3. **City Management Features**
+   - Reorder cities (drag & drop)
+   - Set any city as default
+   - Bulk delete
+   - Import/Export city list
+
+4. **Search Improvements**
+   - Online city database (OpenWeatherMap, GeoNames API)
+   - Recent searches
+   - Popular cities suggestions
+   - Country filtering
+
+5. **Enhanced UI**
+   - Page indicators (dots showing current city)
+   - City thumbnails/flags
+   - Weather-based backgrounds per city
+   - Animated transitions
+
+6. **Data Sync**
+   - Cloud backup of city list
+   - Sync across devices
+   - Share city list with others
+
+## Usage Examples
+
+### Example 1: Add Singapore
+```
+1. Open app → Shows Binh Tan
+2. Tap + button
+3. Type "Singapore" in search
+4. Tap "Singapore, Singapore" result
+5. See "City added" toast
+6. Tap back arrow
+7. Swipe left to see Singapore weather
+```
+
+### Example 2: Managing Multiple Cities
+```
+1. Add cities: Singapore, Tokyo, London
+2. Main screen: Swipe through 4 cities
+   - Binh Tan (default)
+   - Singapore
+   - Tokyo
+   - London
+3. Each shows full weather page
+```
+
+### Example 3: Cannot Delete Default
+```
+1. Open Manage Cities
+2. Try to delete "Binh Tan"
+3. No delete button shown (location pin instead)
+4. Default city is protected
+```
+
+## Testing Checklist
+
+- [ ] Default city (Binh Tan) created on first launch
+- [ ] Search finds cities by name
+- [ ] Search finds cities by country
+- [ ] Tap search result adds city
+- [ ] Duplicate cities are prevented
+- [ ] Cannot delete default city
+- [ ] Cannot delete last remaining city
+- [ ] Swipe left shows next city
+- [ ] Swipe right shows previous city
+- [ ] Each page shows correct city name
+- [ ] ViewPager maintains position on resume
+- [ ] Database persists across app restarts
+- [ ] Add button opens Manage Cities
+- [ ] Menu button opens Settings
+- [ ] All UI elements are properly styled
+
+## Summary
+
+✅ **Complete Features:**
+- Database-backed city storage
+- One protected default city (Binh Tan)
+- Search bar with 30+ world cities
+- Real-time search results
+- Add cities from search
+- Delete non-default cities
+- Swipeable ViewPager2 main screen
+- Smooth page transitions
+- Fragment-based architecture
+- Persistent data storage
+
+The Manage Cities feature is fully functional and ready to use! Users can now track weather for multiple cities and easily switch between them with a swipe gesture.
 
