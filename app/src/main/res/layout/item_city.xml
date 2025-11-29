@@ -13,9 +13,23 @@
         android:layout_height="wrap_content"
         android:padding="16dp">
 
+        <!-- Drag Handle - Always visible on left -->
+        <ImageView
+            android:id="@+id/ivDragHandle"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_alignParentStart="true"
+            android:layout_centerVertical="true"
+            android:layout_marginEnd="12dp"
+            android:src="@android:drawable/ic_menu_sort_by_size"
+            android:tint="#CCFFFFFF"
+            android:contentDescription="Drag to reorder"/>
+
         <LinearLayout
+            android:id="@+id/layoutContent"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_toEndOf="@id/ivDragHandle"
             android:layout_toStartOf="@id/layoutRight"
             android:layout_centerVertical="true"
             android:orientation="vertical">
@@ -75,16 +89,15 @@
                 android:textSize="42sp"
                 android:textColor="@color/white"
                 android:fontFamily="sans-serif-thin"
-                android:layout_marginEnd="8dp"/>
+                android:layout_marginEnd="12dp"/>
 
-            <ImageButton
-                android:id="@+id/btnDeleteCity"
+            <!-- Checkbox for selection in edit mode - Now on the right -->
+            <CheckBox
+                android:id="@+id/cbSelectCity"
                 android:layout_width="32dp"
                 android:layout_height="32dp"
-                android:background="?attr/selectableItemBackgroundBorderless"
-                android:src="@android:drawable/ic_menu_delete"
-                android:tint="@color/white"
-                android:contentDescription="Delete city"/>
+                android:button="@drawable/custom_checkbox"
+                android:visibility="gone"/>
 
         </LinearLayout>
 
