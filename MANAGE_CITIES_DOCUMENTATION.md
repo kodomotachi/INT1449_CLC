@@ -299,3 +299,6 @@ CREATE TABLE cities (
 
 The Manage Cities feature is fully functional and ready to use! Users can now track weather for multiple cities and easily switch between them with a swipe gesture.
 
+
+
+

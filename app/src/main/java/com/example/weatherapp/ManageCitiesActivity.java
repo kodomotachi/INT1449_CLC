@@ -6,18 +6,24 @@ import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -27,11 +33,19 @@ public class ManageCitiesActivity extends AppCompatActivity {
     private RecyclerView rvCities;
     private RecyclerView rvSearchResults;
     private EditText etSearchCity;
+    private RelativeLayout layoutDeleteButton;
+    private LinearLayout btnDeleteSelected;
+    
     private CityDatabaseHelper dbHelper;
     private CitiesAdapter citiesAdapter;
     private SearchResultsAdapter searchResultsAdapter;
     private List<City> cities;
     private List<City> searchResults;
+    private ItemTouchHelper itemTouchHelper;
+
+    // Edit mode state
+    private boolean isEditMode = false;
+    private List<Integer> selectedCityIds = new ArrayList<>();
 
     // Sample world cities database
     private Map<String, City> worldCities;
@@ -46,6 +60,7 @@ public class ManageCitiesActivity extends AppCompatActivity {
         initializeViews();
         loadCities();
         setupSearch();
+        setupItemTouchHelper();
     }
 
     private void initializeViews() {
@@ -53,8 +68,16 @@ public class ManageCitiesActivity extends AppCompatActivity {
         rvCities = findViewById(R.id.rvCities);
         rvSearchResults = findViewById(R.id.rvSearchResults);
         etSearchCity = findViewById(R.id.etSearchCity);
+        layoutDeleteButton = findViewById(R.id.layoutDeleteButton);
+        btnDeleteSelected = findViewById(R.id.btnDeleteSelected);
 
-        btnBack.setOnClickListener(v -> finish());
+        btnBack.setOnClickListener(v -> {
+            if (isEditMode) {
+                exitEditMode();
+            } else {
+                finish();
+            }
+        });
 
         cities = new ArrayList<>();
         citiesAdapter = new CitiesAdapter(cities);
@@ -65,6 +88,8 @@ public class ManageCitiesActivity extends AppCompatActivity {
         searchResultsAdapter = new SearchResultsAdapter(searchResults);
         rvSearchResults.setLayoutManager(new LinearLayoutManager(this));
         rvSearchResults.setAdapter(searchResultsAdapter);
+
+        btnDeleteSelected.setOnClickListener(v -> deleteSelectedCities());
     }
 
     private void initializeWorldCities() {
@@ -185,6 +210,123 @@ public class ManageCitiesActivity extends AppCompatActivity {
         citiesAdapter.notifyDataSetChanged();
     }
 
+    private void setupItemTouchHelper() {
+        ItemTouchHelper.Callback callback = new ItemTouchHelper.SimpleCallback(
+                ItemTouchHelper.UP | ItemTouchHelper.DOWN, 0) {
+            
+            @Override
+            public boolean onMove(@NonNull RecyclerView recyclerView, 
+                                @NonNull RecyclerView.ViewHolder viewHolder, 
+                                @NonNull RecyclerView.ViewHolder target) {
+                int fromPosition = viewHolder.getAdapterPosition();
+                int toPosition = target.getAdapterPosition();
+                
+                // Don't allow moving default city or moving to default city position
+                if (cities.get(fromPosition).isDefault() || cities.get(toPosition).isDefault()) {
+                    return false;
+                }
+                
+                // Swap items in the list
+                Collections.swap(cities, fromPosition, toPosition);
+                
+                // Notify adapter of the move for real-time update
+                citiesAdapter.notifyItemMoved(fromPosition, toPosition);
+                
+                return true;
+            }
+
+            @Override
+            public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
+                // Not used
+            }
+
+            @Override
+            public boolean isLongPressDragEnabled() {
+                return false; // We'll handle drag manually via touch listener
+            }
+            
+            @Override
+            public void clearView(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder) {
+                super.clearView(recyclerView, viewHolder);
+                // Optional: Save the new order to database here if needed
+            }
+        };
+        
+        itemTouchHelper = new ItemTouchHelper(callback);
+        itemTouchHelper.attachToRecyclerView(rvCities);
+    }
+
+    private void enterEditMode() {
+        isEditMode = true;
+        selectedCityIds.clear();
+        layoutDeleteButton.setVisibility(View.VISIBLE);
+        etSearchCity.setEnabled(false);
+        citiesAdapter.notifyDataSetChanged();
+    }
+
+    private void exitEditMode() {
+        isEditMode = false;
+        selectedCityIds.clear();
+        layoutDeleteButton.setVisibility(View.GONE);
+        etSearchCity.setEnabled(true);
+        citiesAdapter.notifyDataSetChanged();
+    }
+
+    private void deleteSelectedCities() {
+        if (selectedCityIds.isEmpty()) {
+            Toast.makeText(this, "No cities selected", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        // Check if trying to delete default city
+        for (int cityId : selectedCityIds) {
+            City city = getCityById(cityId);
+            if (city != null && city.isDefault()) {
+                Toast.makeText(this, R.string.cannot_remove_last_city, Toast.LENGTH_SHORT).show();
+                return;
+            }
+        }
+
+        // Check if deleting all cities
+        if (selectedCityIds.size() >= cities.size()) {
+            Toast.makeText(this, R.string.cannot_remove_last_city, Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        new AlertDialog.Builder(this)
+                .setTitle("Delete Cities")
+                .setMessage("Delete " + selectedCityIds.size() + " selected city(cities)?")
+                .setPositiveButton("Delete", (dialog, which) -> {
+                    for (int cityId : selectedCityIds) {
+                        dbHelper.deleteCity(cityId);
+                    }
+                    selectedCityIds.clear();
+                    loadCities();
+                    exitEditMode();
+                    Toast.makeText(this, "Cities deleted", Toast.LENGTH_SHORT).show();
+                })
+                .setNegativeButton("Cancel", null)
+                .show();
+    }
+
+    private City getCityById(int id) {
+        for (City city : cities) {
+            if (city.getId() == id) {
+                return city;
+            }
+        }
+        return null;
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (isEditMode) {
+            exitEditMode();
+        } else {
+            super.onBackPressed();
+        }
+    }
+
     // Cities Adapter
     private class CitiesAdapter extends RecyclerView.Adapter<CitiesAdapter.CityViewHolder> {
         private List<City> cities;
@@ -209,26 +351,66 @@ public class ManageCitiesActivity extends AppCompatActivity {
                     city.getHighTemp() + "° / " + city.getLowTemp() + "°");
             holder.tvCityTemp.setText(city.getTemperature() + "°");
 
+            // Show location pin for default city
             if (city.isDefault()) {
                 holder.ivLocationPin.setVisibility(View.VISIBLE);
-                holder.btnDeleteCity.setVisibility(View.GONE);
             } else {
                 holder.ivLocationPin.setVisibility(View.GONE);
-                holder.btnDeleteCity.setVisibility(View.VISIBLE);
             }
 
-            holder.btnDeleteCity.setOnClickListener(v -> {
-                if (dbHelper.getCityCount() <= 1) {
-                    Toast.makeText(ManageCitiesActivity.this, 
-                            R.string.cannot_remove_last_city, Toast.LENGTH_SHORT).show();
-                    return;
+            if (isEditMode) {
+                // Edit mode: Show checkbox on the right and drag handle on the left
+                holder.cbSelectCity.setVisibility(View.VISIBLE);
+                
+                if (city.isDefault()) {
+                    // Default city: No drag handle, disabled checkbox
+                    holder.ivDragHandle.setVisibility(View.GONE);
+                    holder.cbSelectCity.setEnabled(false);
+                    holder.cbSelectCity.setAlpha(0.3f);
+                } else {
+                    // Non-default cities: Show drag handle, enabled checkbox
+                    holder.ivDragHandle.setVisibility(View.VISIBLE);
+                    holder.ivDragHandle.setAlpha(1.0f);
+                    holder.cbSelectCity.setEnabled(true);
+                    holder.cbSelectCity.setAlpha(1.0f);
+                }
+                
+                holder.cbSelectCity.setChecked(selectedCityIds.contains(city.getId()));
+                holder.cbSelectCity.setOnCheckedChangeListener((buttonView, isChecked) -> {
+                    if (isChecked) {
+                        if (!selectedCityIds.contains(city.getId())) {
+                            selectedCityIds.add(city.getId());
+                        }
+                    } else {
+                        selectedCityIds.remove(Integer.valueOf(city.getId()));
+                    }
+                });
+
+                // Enable drag for non-default cities
+                if (!city.isDefault()) {
+                    holder.ivDragHandle.setOnTouchListener((v, event) -> {
+                        if (event.getAction() == android.view.MotionEvent.ACTION_DOWN) {
+                            itemTouchHelper.startDrag(holder);
+                        }
+                        return false;
+                    });
+                } else {
+                    holder.ivDragHandle.setOnTouchListener(null);
                 }
 
-                dbHelper.deleteCity(city.getId());
-                loadCities();
-                Toast.makeText(ManageCitiesActivity.this, 
-                        R.string.city_removed, Toast.LENGTH_SHORT).show();
-            });
+                // Long press still works to exit or stay in edit mode
+                holder.itemView.setOnLongClickListener(v -> true);
+            } else {
+                // Normal mode: Hide both checkbox and drag handle
+                holder.cbSelectCity.setVisibility(View.GONE);
+                holder.ivDragHandle.setVisibility(View.GONE);
+
+                // Long press to enter edit mode
+                holder.itemView.setOnLongClickListener(v -> {
+                    enterEditMode();
+                    return true;
+                });
+            }
         }
 
         @Override
@@ -238,8 +420,8 @@ public class ManageCitiesActivity extends AppCompatActivity {
 
         class CityViewHolder extends RecyclerView.ViewHolder {
             TextView tvCityName, tvCityWeather, tvCityTemp;
-            ImageView ivLocationPin;
-            ImageButton btnDeleteCity;
+            ImageView ivLocationPin, ivDragHandle;
+            CheckBox cbSelectCity;
 
             public CityViewHolder(@NonNull View itemView) {
                 super(itemView);
@@ -247,7 +429,8 @@ public class ManageCitiesActivity extends AppCompatActivity {
                 tvCityWeather = itemView.findViewById(R.id.tvCityWeather);
                 tvCityTemp = itemView.findViewById(R.id.tvCityTemp);
                 ivLocationPin = itemView.findViewById(R.id.ivLocationPin);
-                btnDeleteCity = itemView.findViewById(R.id.btnDeleteCity);
+                ivDragHandle = itemView.findViewById(R.id.ivDragHandle);
+                cbSelectCity = itemView.findViewById(R.id.cbSelectCity);
             }
         }
     }
@@ -312,4 +495,3 @@ public class ManageCitiesActivity extends AppCompatActivity {
         dbHelper.close();
     }
 }
-

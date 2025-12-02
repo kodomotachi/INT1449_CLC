@@ -4,7 +4,7 @@
             "outputFile": "com.example.weatherapp-mergeDebugResources-33:/values-sw600dp-v13/values-sw600dp-v13.xml",
             "map": [
                 {
-                    "source": "/Users/kodomotachi/.gradle/caches/8.13/transforms/819d55297a559bd5cfd33b158f303f90/transformed/appcompat-1.7.1/res/values-sw600dp-v13/values-sw600dp-v13.xml",
+                    "source": "C:\\Users\\qwert\\.gradle\\caches\\8.13\\transforms\\edcbc3a426e8c084498c4b367f6f4c7b\\transformed\\appcompat-1.7.1\\res\\values-sw600dp-v13\\values-sw600dp-v13.xml",
                     "from": {
                         "startLines": "2,3,4,5,6,7,8,9",
                         "startColumns": "4,4,4,4,4,4,4,4",
@@ -14,7 +14,7 @@
                     }
                 },
                 {
-                    "source": "/Users/kodomotachi/.gradle/caches/8.13/transforms/519ac23394117e5a231e7ddd1ee95cf5/transformed/material-1.13.0/res/values-sw600dp-v13/values-sw600dp-v13.xml",
+                    "source": "C:\\Users\\qwert\\.gradle\\caches\\8.13\\transforms\\99cc1fc8a1d1433b943f2a0b89ba07f4\\transformed\\material-1.13.0\\res\\values-sw600dp-v13\\values-sw600dp-v13.xml",
                     "from": {
                         "startLines": "2,3,4,5,6,7,8,10,11,12,13,14",
                         "startColumns": "4,4,4,4,4,4,4,4,4,4,4,4",

@@ -3555,6 +3555,7 @@ int drawable btn_radio_off_to_on_mtrl_animation 0x7f07007f
 int drawable btn_radio_on_mtrl 0x7f070080
 int drawable btn_radio_on_to_off_mtrl_animation 0x7f070081
 int drawable card_background 0x7f070082
+int drawable custom_checkbox 0x7f0700f1
 int drawable design_fab_background 0x7f070083
 int drawable design_ic_visibility 0x7f070084
 int drawable design_ic_visibility_off 0x7f070085
@@ -3772,13 +3773,14 @@ int id bounceEnd 0x7f080067
 int id bounceStart 0x7f080068
 int id btnAdd 0x7f080069
 int id btnBack 0x7f08006a
-int id btnDeleteCity 0x7f08006b
+int id btnDeleteSelected 0x7f080234
 int id btnMenu 0x7f08006c
 int id buttonPanel 0x7f08006d
 int id cache_measures 0x7f08006e
 int id callMeasure 0x7f08006f
 int id cancel_button 0x7f080070
 int id carryVelocity 0x7f080071
+int id cbSelectCity 0x7f080235
 int id center 0x7f080072
 int id centerCrop 0x7f080073
 int id centerInside 0x7f080074
@@ -3912,6 +3914,7 @@ int id is_pooling_container_tag 0x7f0800f3
 int id italic 0x7f0800f4
 int id item_touch_helper_previous_elevation 0x7f0800f5
 int id ivBackground 0x7f0800f6
+int id ivDragHandle 0x7f080236
 int id ivHourlyIcon 0x7f0800f7
 int id ivInfoIcon 0x7f0800f8
 int id ivLocationPin 0x7f0800f9
@@ -3919,6 +3922,8 @@ int id jumpToEnd 0x7f0800fa
 int id jumpToStart 0x7f0800fb
 int id labeled 0x7f0800fc
 int id layout 0x7f0800fd
+int id layoutContent 0x7f080237
+int id layoutDeleteButton 0x7f080238
 int id layoutRight 0x7f0800fe
 int id layoutTemperatureUnits 0x7f0800ff
 int id layoutWindSpeedUnits 0x7f080100

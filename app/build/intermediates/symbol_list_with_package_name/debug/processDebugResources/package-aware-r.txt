@@ -3556,6 +3556,7 @@ drawable btn_radio_off_to_on_mtrl_animation
 drawable btn_radio_on_mtrl
 drawable btn_radio_on_to_off_mtrl_animation
 drawable card_background
+drawable custom_checkbox
 drawable design_fab_background
 drawable design_ic_visibility
 drawable design_ic_visibility_off
@@ -3773,13 +3774,14 @@ id bounceEnd
 id bounceStart
 id btnAdd
 id btnBack
-id btnDeleteCity
+id btnDeleteSelected
 id btnMenu
 id buttonPanel
 id cache_measures
 id callMeasure
 id cancel_button
 id carryVelocity
+id cbSelectCity
 id center
 id centerCrop
 id centerInside
@@ -3913,6 +3915,7 @@ id is_pooling_container_tag
 id italic
 id item_touch_helper_previous_elevation
 id ivBackground
+id ivDragHandle
 id ivHourlyIcon
 id ivInfoIcon
 id ivLocationPin
@@ -3920,6 +3923,8 @@ id jumpToEnd
 id jumpToStart
 id labeled
 id layout
+id layoutContent
+id layoutDeleteButton
 id layoutRight
 id layoutTemperatureUnits
 id layoutWindSpeedUnits

@@ -10,6 +10,7 @@ color text_gray
 color transparent
 color white
 drawable card_background
+drawable custom_checkbox
 drawable forecast_card_background
 drawable hourly_item_background
 drawable ic_add
@@ -20,14 +21,18 @@ drawable ic_menu
 drawable ic_rain
 id btnAdd
 id btnBack
-id btnDeleteCity
+id btnDeleteSelected
 id btnMenu
+id cbSelectCity
 id etSearchCity
 id flInfoIcon
 id ivBackground
+id ivDragHandle
 id ivHourlyIcon
 id ivInfoIcon
 id ivLocationPin
+id layoutContent
+id layoutDeleteButton
 id layoutRight
 id layoutTemperatureUnits
 id layoutWindSpeedUnits
