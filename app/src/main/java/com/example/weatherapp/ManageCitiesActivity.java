@@ -131,11 +131,17 @@ public class ManageCitiesActivity extends AppCompatActivity {
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 performSearch(s.toString());
+                // testing
+                getCityName(s.toString());
             }
 
             @Override
             public void afterTextChanged(Editable s) {}
         });
+    }
+
+    protected void getCityName(String query) {
+
     }
 
     private void performSearch(String query) {
