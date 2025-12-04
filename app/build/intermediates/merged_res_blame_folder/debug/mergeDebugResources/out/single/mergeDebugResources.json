@@ -20,6 +20,10 @@
         "source": "C:\\Users\\qwert\\.gradle\\daemon\\8.13\\com.example.weatherapp-main-37:\\layout\\activity_main.xml"
     },
     {
+        "merged": "com.example.weatherapp-debug-35:/layout_item_search_result.xml.flat",
+        "source": "com.example.weatherapp-main-37:/layout/item_search_result.xml"
+    },
+    {
         "merged": "C:\\Users\\qwert\\.gradle\\daemon\\8.13\\com.example.weatherapp-debug-35:\\drawable_hourly_item_background.xml.flat",
         "source": "C:\\Users\\qwert\\.gradle\\daemon\\8.13\\com.example.weatherapp-main-37:\\drawable\\hourly_item_background.xml"
     },
@@ -52,6 +56,10 @@
         "source": "C:\\Users\\qwert\\.gradle\\daemon\\8.13\\com.example.weatherapp-main-37:\\layout\\fragment_weather_page.xml"
     },
     {
+        "merged": "com.example.weatherapp-debug-35:/drawable_custom_checkbox.xml.flat",
+        "source": "com.example.weatherapp-main-37:/drawable/custom_checkbox.xml"
+    },
+    {
         "merged": "C:\\Users\\qwert\\.gradle\\daemon\\8.13\\com.example.weatherapp-debug-35:\\layout_item_hourly_forecast.xml.flat",
         "source": "C:\\Users\\qwert\\.gradle\\daemon\\8.13\\com.example.weatherapp-main-37:\\layout\\item_hourly_forecast.xml"
     },
@@ -64,12 +72,12 @@
         "source": "C:\\Users\\qwert\\.gradle\\daemon\\8.13\\com.example.weatherapp-main-37:\\mipmap-xxxhdpi\\ic_launcher_round.webp"
     },
     {
-        "merged": "com.example.weatherapp-debug-35:/layout_item_city.xml.flat",
-        "source": "com.example.weatherapp-main-37:/layout/item_city.xml"
-    },
-    {
         "merged": "C:\\Users\\qwert\\.gradle\\daemon\\8.13\\com.example.weatherapp-debug-35:\\mipmap-xxxhdpi_ic_launcher.webp.flat",
         "source": "C:\\Users\\qwert\\.gradle\\daemon\\8.13\\com.example.weatherapp-main-37:\\mipmap-xxxhdpi\\ic_launcher.webp"
+    },
+    {
+        "merged": "com.example.weatherapp-debug-35:/layout_fragment_weather_page.xml.flat",
+        "source": "com.example.weatherapp-main-37:/layout/fragment_weather_page.xml"
     },
     {
         "merged": "C:\\Users\\qwert\\.gradle\\daemon\\8.13\\com.example.weatherapp-debug-35:\\mipmap-anydpi-v26_ic_launcher.xml.flat",
@@ -82,6 +90,10 @@
     {
         "merged": "C:\\Users\\qwert\\.gradle\\daemon\\8.13\\com.example.weatherapp-debug-35:\\xml_backup_rules.xml.flat",
         "source": "C:\\Users\\qwert\\.gradle\\daemon\\8.13\\com.example.weatherapp-main-37:\\xml\\backup_rules.xml"
+    },
+    {
+        "merged": "com.example.weatherapp-debug-35:/layout_activity_manage_cities.xml.flat",
+        "source": "com.example.weatherapp-main-37:/layout/activity_manage_cities.xml"
     },
     {
         "merged": "C:\\Users\\qwert\\.gradle\\daemon\\8.13\\com.example.weatherapp-debug-35:\\xml_data_extraction_rules.xml.flat",

@@ -3,6 +3,7 @@ package com.example.weatherapp;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,11 +23,13 @@ import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class ManageCitiesActivity extends AppCompatActivity {
 
@@ -47,8 +50,9 @@ public class ManageCitiesActivity extends AppCompatActivity {
     private boolean isEditMode = false;
     private List<Integer> selectedCityIds = new ArrayList<>();
 
-    // Sample world cities database
-    private Map<String, City> worldCities;
+    // Constants
+    private static final String TAG = "ManageCitiesActivity";
+    private static final int MAX_SUGGESTIONS = 5;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,7 +60,6 @@ public class ManageCitiesActivity extends AppCompatActivity {
         setContentView(R.layout.activity_manage_cities);
 
         dbHelper = new CityDatabaseHelper(this);
-        initializeWorldCities();
         initializeViews();
         loadCities();
         setupSearch();
@@ -92,62 +95,6 @@ public class ManageCitiesActivity extends AppCompatActivity {
         btnDeleteSelected.setOnClickListener(v -> deleteSelectedCities());
     }
 
-    private void initializeWorldCities() {
-        worldCities = new HashMap<>();
-        
-        // Vietnam
-        worldCities.put("Binh Tan", new City("Binh Tan", "Vietnam", 10.7333, 106.6167));
-        worldCities.put("Hanoi", new City("Hanoi", "Vietnam", 21.0285, 105.8542));
-        worldCities.put("Ho Chi Minh City", new City("Ho Chi Minh City", "Vietnam", 10.8231, 106.6297));
-        worldCities.put("Da Nang", new City("Da Nang", "Vietnam", 16.0544, 108.2022));
-        worldCities.put("Hue", new City("Hue", "Vietnam", 16.4637, 107.5909));
-        
-        // Southeast Asia
-        worldCities.put("Singapore", new City("Singapore", "Singapore", 1.3521, 103.8198));
-        worldCities.put("Bangkok", new City("Bangkok", "Thailand", 13.7563, 100.5018));
-        worldCities.put("Kuala Lumpur", new City("Kuala Lumpur", "Malaysia", 3.1390, 101.6869));
-        worldCities.put("Jakarta", new City("Jakarta", "Indonesia", -6.2088, 106.8456));
-        worldCities.put("Manila", new City("Manila", "Philippines", 14.5995, 120.9842));
-        
-        // East Asia
-        worldCities.put("Tokyo", new City("Tokyo", "Japan", 35.6762, 139.6503));
-        worldCities.put("Seoul", new City("Seoul", "South Korea", 37.5665, 126.9780));
-        worldCities.put("Beijing", new City("Beijing", "China", 39.9042, 116.4074));
-        worldCities.put("Shanghai", new City("Shanghai", "China", 31.2304, 121.4737));
-        worldCities.put("Hong Kong", new City("Hong Kong", "Hong Kong", 22.3193, 114.1694));
-        worldCities.put("Taipei", new City("Taipei", "Taiwan", 25.0330, 121.5654));
-        
-        // Australia & Oceania
-        worldCities.put("Sydney", new City("Sydney", "Australia", -33.8688, 151.2093));
-        worldCities.put("Melbourne", new City("Melbourne", "Australia", -37.8136, 144.9631));
-        worldCities.put("Auckland", new City("Auckland", "New Zealand", -36.8485, 174.7633));
-        
-        // Europe
-        worldCities.put("London", new City("London", "United Kingdom", 51.5074, -0.1278));
-        worldCities.put("Paris", new City("Paris", "France", 48.8566, 2.3522));
-        worldCities.put("Berlin", new City("Berlin", "Germany", 52.5200, 13.4050));
-        worldCities.put("Rome", new City("Rome", "Italy", 41.9028, 12.4964));
-        worldCities.put("Madrid", new City("Madrid", "Spain", 40.4168, -3.7038));
-        worldCities.put("Moscow", new City("Moscow", "Russia", 55.7558, 37.6173));
-        
-        // North America
-        worldCities.put("New York", new City("New York", "United States", 40.7128, -74.0060));
-        worldCities.put("Los Angeles", new City("Los Angeles", "United States", 34.0522, -118.2437));
-        worldCities.put("Chicago", new City("Chicago", "United States", 41.8781, -87.6298));
-        worldCities.put("Toronto", new City("Toronto", "Canada", 43.6532, -79.3832));
-        worldCities.put("Vancouver", new City("Vancouver", "Canada", 49.2827, -123.1207));
-        
-        // South America
-        worldCities.put("São Paulo", new City("São Paulo", "Brazil", -23.5505, -46.6333));
-        worldCities.put("Buenos Aires", new City("Buenos Aires", "Argentina", -34.6037, -58.3816));
-        worldCities.put("Rio de Janeiro", new City("Rio de Janeiro", "Brazil", -22.9068, -43.1729));
-        
-        // Middle East
-        worldCities.put("Dubai", new City("Dubai", "UAE", 25.2048, 55.2708));
-        worldCities.put("Tel Aviv", new City("Tel Aviv", "Israel", 32.0853, 34.7818));
-        worldCities.put("Istanbul", new City("Istanbul", "Turkey", 41.0082, 28.9784));
-    }
-
     private void setupSearch() {
         etSearchCity.addTextChangedListener(new TextWatcher() {
             @Override
@@ -155,9 +102,18 @@ public class ManageCitiesActivity extends AppCompatActivity {
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                performSearch(s.toString());
-                // testing
-                getCityName(s.toString());
+                String query = s.toString().trim();
+                
+                if (query.isEmpty()) {
+                    // Clear suggestions when query is empty
+                    searchResults.clear();
+                    rvSearchResults.setVisibility(View.GONE);
+                    searchResultsAdapter.notifyDataSetChanged();
+                    return;
+                }
+                
+                // Send query to backend for suggestions
+                onSearchQueryChanged(query);
             }
 
             @Override
@@ -165,34 +121,98 @@ public class ManageCitiesActivity extends AppCompatActivity {
         });
     }
 
-    protected void getCityName(String query) {
-
+    /**
+     * Called when search query changes.
+     * Override this method or call from backend to fetch suggestions.
+     * @param query The search query string
+     */
+    protected void onSearchQueryChanged(String query) {
+        // TODO: Backend should implement this to fetch city suggestions
+        // Example: Call your API with the query and then call onSuggestionsReceived() with results
+        Log.d(TAG, "Search query: " + query);
     }
 
-    private void performSearch(String query) {
-        searchResults.clear();
-        
-        if (query.isEmpty()) {
+    /**
+     * Receives city suggestions from backend.
+     * Call this method from your backend/API response handler.
+     * 
+     * @param suggestions JSONArray of city suggestions (maximum 5 will be displayed)
+     * 
+     * Expected JSON format:
+     * [
+     *   {"name": "Singapore", "country": "Singapore", "lat": 1.3521, "lon": 103.8198},
+     *   {"name": "Sydney", "country": "Australia", "lat": -33.8688, "lon": 151.2093},
+     *   ...
+     * ]
+     */
+    public void onSuggestionsReceived(JSONArray suggestions) {
+        runOnUiThread(() -> {
+            searchResults.clear();
+            
+            if (suggestions == null || suggestions.length() == 0) {
+                rvSearchResults.setVisibility(View.GONE);
+                searchResultsAdapter.notifyDataSetChanged();
+                return;
+            }
+            
+            // Parse up to MAX_SUGGESTIONS (5) items
+            int count = Math.min(suggestions.length(), MAX_SUGGESTIONS);
+            
+            for (int i = 0; i < count; i++) {
+                try {
+                    JSONObject cityJson = suggestions.getJSONObject(i);
+                    
+                    String name = cityJson.optString("name", "");
+                    String country = cityJson.optString("country", "");
+                    double lat = cityJson.optDouble("lat", 0.0);
+                    double lon = cityJson.optDouble("lon", 0.0);
+                    
+                    if (!name.isEmpty()) {
+                        City city = new City(name, country, lat, lon);
+                        searchResults.add(city);
+                    }
+                    
+                } catch (JSONException e) {
+                    Log.e(TAG, "Error parsing city at index " + i + ": " + e.getMessage());
+                }
+            }
+            
+            if (searchResults.isEmpty()) {
+                rvSearchResults.setVisibility(View.GONE);
+            } else {
+                rvSearchResults.setVisibility(View.VISIBLE);
+            }
+            searchResultsAdapter.notifyDataSetChanged();
+        });
+    }
+
+    /**
+     * Convenience method to receive suggestions as a JSON string.
+     * @param jsonString JSON array string of city suggestions
+     */
+    public void onSuggestionsReceived(String jsonString) {
+        try {
+            JSONArray suggestions = new JSONArray(jsonString);
+            onSuggestionsReceived(suggestions);
+        } catch (JSONException e) {
+            Log.e(TAG, "Error parsing JSON string: " + e.getMessage());
+            runOnUiThread(() -> {
+                searchResults.clear();
+                rvSearchResults.setVisibility(View.GONE);
+                searchResultsAdapter.notifyDataSetChanged();
+            });
+        }
+    }
+
+    /**
+     * Clears all search suggestions.
+     */
+    public void clearSuggestions() {
+        runOnUiThread(() -> {
+            searchResults.clear();
             rvSearchResults.setVisibility(View.GONE);
             searchResultsAdapter.notifyDataSetChanged();
-            return;
-        }
-
-        String lowerQuery = query.toLowerCase();
-        for (Map.Entry<String, City> entry : worldCities.entrySet()) {
-            City city = entry.getValue();
-            if (city.getName().toLowerCase().contains(lowerQuery) || 
-                city.getCountry().toLowerCase().contains(lowerQuery)) {
-                searchResults.add(city);
-            }
-        }
-
-        if (searchResults.isEmpty()) {
-            rvSearchResults.setVisibility(View.GONE);
-        } else {
-            rvSearchResults.setVisibility(View.VISIBLE);
-        }
-        searchResultsAdapter.notifyDataSetChanged();
+        });
     }
 
     private void loadCities() {

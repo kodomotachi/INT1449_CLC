@@ -21,8 +21,8 @@
             android:layout_centerVertical="true"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:src="@android:drawable/ic_menu_revert"
-            android:tint="@color/white"
-            android:contentDescription="Back"/>
+            android:contentDescription="Back"
+            app:tint="@color/white" />
 
         <TextView
             android:layout_width="wrap_content"
@@ -54,9 +54,9 @@
                 android:layout_width="24dp"
                 android:layout_height="24dp"
                 android:src="@android:drawable/ic_menu_search"
-                android:tint="#808080"
                 android:layout_marginStart="8dp"
-                android:contentDescription="Search"/>
+                android:contentDescription="Search"
+                app:tint="#808080" />
 
             <EditText
                 android:id="@+id/etSearchCity"
