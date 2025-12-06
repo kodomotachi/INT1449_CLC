@@ -13,6 +13,9 @@ import java.util.Locale;
 
 public class WeatherDataAPI {
 
+    // Base URL for Open-Meteo API (no API key required)
+    private static final String OPEN_METEO_BASE_URL = "https://api.open-meteo.com/v1/forecast";
+
     // use for both url with non-coordinate and coordinate
     public static void getData(Context context, String url, ApiCallback callback) {
         RequestQueue queue = Volley.newRequestQueue(context);
@@ -35,18 +38,28 @@ public class WeatherDataAPI {
         queue.add(request);
     }
 
-    // Convenience helper to fetch weather data by coordinates
+    /**
+     * Fetch current weather data from Open-Meteo API by coordinates
+     * Open-Meteo is free and doesn't require an API key
+     * 
+     * @param context Android context
+     * @param latitude Latitude coordinate
+     * @param longitude Longitude coordinate
+     * @param callback Callback to handle response
+     */
     public static void getDataByCoordinates(Context context,
             double latitude,
             double longitude,
-            String apiKey,
             ApiCallback callback) {
+        // Open-Meteo API endpoint with current weather and daily forecast parameters
+        // Current: temperature_2m, weather_code, relative_humidity_2m, pressure_msl, sunrise, sunset
+        // Daily: temperature_2m_max, temperature_2m_min (for today's high/low)
         String url = String.format(
                 Locale.US,
-                "https://api.openweathermap.org/data/2.5/weather?lat=%f&lon=%f&appid=%s&units=metric",
+                "%s?latitude=%.4f&longitude=%.4f&current=temperature_2m,weather_code,relative_humidity_2m,pressure_msl,sunrise,sunset&daily=temperature_2m_max,temperature_2m_min&timezone=auto&forecast_days=1",
+                OPEN_METEO_BASE_URL,
                 latitude,
-                longitude,
-                apiKey);
+                longitude);
         getData(context, url, callback);
     }
 
