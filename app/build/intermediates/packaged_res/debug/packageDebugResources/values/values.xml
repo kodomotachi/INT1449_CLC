@@ -5,6 +5,7 @@
     <color name="light_gray">#F5F5F5</color>
     <color name="orange_accent">#FF9800</color>
     <color name="semi_transparent_white">#E6FFFFFF</color>
+    <color name="suggestion_bg">#22303A</color>
     <color name="text_dark">#333333</color>
     <color name="text_gray">#666666</color>
     <color name="transparent">#00000000</color>

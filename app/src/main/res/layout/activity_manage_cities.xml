@@ -1,18 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:layout_marginTop="40dp"
     android:background="#FF000000">
 
     <!-- Toolbar -->
     <RelativeLayout
+        android:id="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="56dp"
         android:paddingStart="8dp"
-        android:paddingEnd="16dp">
+        android:paddingEnd="16dp"
+        android:layout_marginTop="40dp">
 
         <ImageButton
             android:id="@+id/btnBack"
@@ -36,8 +36,10 @@
 
     <!-- Search Bar -->
     <androidx.cardview.widget.CardView
+        android:id="@+id/searchContainer"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_below="@id/toolbar"
         android:layout_margin="16dp"
         app:cardCornerRadius="25dp"
         app:cardElevation="0dp"
@@ -79,26 +81,33 @@
 
     </androidx.cardview.widget.CardView>
 
-    <!-- Search Results RecyclerView -->
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/rvSearchResults"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginEnd="16dp"
-        android:visibility="gone"
-        android:background="#1A808080"
-        android:maxHeight="200dp"/>
-
     <!-- Cities List -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rvCities"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
+        android:layout_height="match_parent"
+        android:layout_below="@id/searchContainer"
+        android:layout_above="@id/layoutDeleteButton"
         android:paddingStart="8dp"
         android:paddingEnd="8dp"
         android:paddingBottom="80dp"
+        android:clipToPadding="false"/>
+
+    <!-- Overlay Search Results RecyclerView -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rvSearchResults"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/searchContainer"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginTop="4dp"
+        android:paddingTop="4dp"
+        android:paddingBottom="4dp"
+        android:visibility="gone"
+        android:background="@color/suggestion_bg"
+        android:maxHeight="300dp"
+        android:elevation="8dp"
         android:clipToPadding="false"/>
 
     <!-- Delete Button (shown in edit mode) -->
@@ -106,6 +115,7 @@
         android:id="@+id/layoutDeleteButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
         android:background="#000000"
         android:paddingTop="16dp"
         android:paddingBottom="32dp"
@@ -142,4 +152,4 @@
 
     </RelativeLayout>
 
-</LinearLayout>
+</RelativeLayout>

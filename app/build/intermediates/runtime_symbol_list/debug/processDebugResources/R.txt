@@ -2422,6 +2422,7 @@ int color secondary_text_default_material_light 0x7f0503a9
 int color secondary_text_disabled_material_dark 0x7f0503aa
 int color secondary_text_disabled_material_light 0x7f0503ab
 int color semi_transparent_white 0x7f0503ac
+int color suggestion_bg 0x7f0503b9
 int color switch_thumb_disabled_material_dark 0x7f0503ad
 int color switch_thumb_disabled_material_light 0x7f0503ae
 int color switch_thumb_material_dark 0x7f0503af
@@ -4082,6 +4083,7 @@ int id scrollIndicatorDown 0x7f08019c
 int id scrollIndicatorUp 0x7f08019d
 int id scrollView 0x7f08019e
 int id scrollable 0x7f08019f
+int id searchContainer 0x7f080238
 int id search_badge 0x7f0801a0
 int id search_bar 0x7f0801a1
 int id search_button 0x7f0801a2
@@ -4170,6 +4172,7 @@ int id title 0x7f0801f4
 int id titleDividerNoCustom 0x7f0801f5
 int id title_template 0x7f0801f6
 int id toggle 0x7f0801f7
+int id toolbar 0x7f080239
 int id top 0x7f0801f8
 int id topPanel 0x7f0801f9
 int id top_center 0x7f0801fa

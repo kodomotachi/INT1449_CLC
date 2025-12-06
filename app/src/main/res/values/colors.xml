@@ -9,4 +9,5 @@
     <color name="blue_accent">#2196F3</color>
     <color name="orange_accent">#FF9800</color>
     <color name="transparent">#00000000</color>
+    <color name="suggestion_bg">#22303A</color>
 </resources>

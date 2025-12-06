@@ -23,6 +23,11 @@ import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.weatherapp.model.City;
+import com.example.weatherapp.model.LocationService;
+import com.example.weatherapp.model.NominatimCallback;
+import com.example.weatherapp.model.WeatherDataAPI;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -53,6 +58,9 @@ public class ManageCitiesActivity extends AppCompatActivity {
     // Constants
     private static final String TAG = "ManageCitiesActivity";
     private static final int MAX_SUGGESTIONS = 5;
+    private static final String OPENWEATHER_API_KEY = "YOUR_API_KEY_HERE"; // TODO: Replace with your OpenWeatherMap API key
+    
+    private LocationService locationService;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,6 +68,7 @@ public class ManageCitiesActivity extends AppCompatActivity {
         setContentView(R.layout.activity_manage_cities);
 
         dbHelper = new CityDatabaseHelper(this);
+        locationService = new LocationService();
         initializeViews();
         loadCities();
         setupSearch();
@@ -98,7 +107,8 @@ public class ManageCitiesActivity extends AppCompatActivity {
     private void setupSearch() {
         etSearchCity.addTextChangedListener(new TextWatcher() {
             @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
@@ -117,39 +127,211 @@ public class ManageCitiesActivity extends AppCompatActivity {
             }
 
             @Override
-            public void afterTextChanged(Editable s) {}
+            public void afterTextChanged(Editable s) {
+            }
         });
     }
 
     /**
      * Called when search query changes.
      * Override this method or call from backend to fetch suggestions.
+     * 
      * @param query The search query string
      */
+    // protected void onSearchQueryChanged(String query) {
+    // // TODO: Backend should implement this to fetch city suggestions
+    // // Example: Call your API with the query and then call
+    // onSuggestionsReceived() with results
+    // Log.d(TAG, "Search query: " + query);
+    // }
+
+    // @Override
     protected void onSearchQueryChanged(String query) {
-        // TODO: Backend should implement this to fetch city suggestions
-        // Example: Call your API with the query and then call onSuggestionsReceived() with results
+        // Log để kiểm tra query
         Log.d(TAG, "Search query: " + query);
+
+        // Chỉ tìm kiếm nếu người dùng gõ ít nhất 2 ký tự
+        if (query.length() >= 2) {
+            Log.d(TAG, "Calling LocationService.fetchSuggestion for: " + query);
+            locationService.fetchSuggestion(this, query, new NominatimCallback() {
+                @Override
+                public void onSuccess(JSONArray result) {
+                    Log.d(TAG, "LocationService returned " + result.length() + " results");
+                    // Parse Nominatim response và convert sang format cho onSuggestionsReceived
+                    parseNominatimResponse(result);
+                }
+
+                @Override
+                public void onError(String message) {
+                    Log.e(TAG, "Error fetching suggestions: " + message);
+                    runOnUiThread(() -> {
+                        searchResults.clear();
+                        rvSearchResults.setVisibility(View.GONE);
+                        searchResultsAdapter.notifyDataSetChanged();
+                    });
+                }
+            });
+        } else {
+            // Clear suggestions when query is too short
+            searchResults.clear();
+            rvSearchResults.setVisibility(View.GONE);
+            searchResultsAdapter.notifyDataSetChanged();
+        }
+    }
+
+    /**
+     * Parse Nominatim API response and convert to City suggestions format
+     * Nominatim API returns places with address object containing various location types
+     */
+    private void parseNominatimResponse(JSONArray nominatimResults) {
+        try {
+            Log.d(TAG, "Parsing " + nominatimResults.length() + " Nominatim results");
+            JSONArray convertedResults = new JSONArray();
+            
+            int count = Math.min(nominatimResults.length(), MAX_SUGGESTIONS);
+            Log.d(TAG, "Processing " + count + " results (max: " + MAX_SUGGESTIONS + ")");
+            
+            for (int i = 0; i < count; i++) {
+                JSONObject place = nominatimResults.getJSONObject(i);
+                
+                // Extract coordinates
+                String latStr = place.optString("lat", "0");
+                String lonStr = place.optString("lon", "0");
+                
+                // Validate coordinates
+                if (latStr.equals("0") || lonStr.equals("0")) {
+                    Log.w(TAG, "Skipping place " + i + " - invalid coordinates");
+                    continue;
+                }
+                
+                double lat, lon;
+                try {
+                    lat = Double.parseDouble(latStr);
+                    lon = Double.parseDouble(lonStr);
+                } catch (NumberFormatException e) {
+                    Log.e(TAG, "Error parsing coordinates: " + e.getMessage());
+                    continue;
+                }
+                
+                // Extract city name and country from address object
+                String cityName = "";
+                String country = "";
+                
+                if (place.has("address")) {
+                    try {
+                        JSONObject address = place.getJSONObject("address");
+                        
+                        // Try to get city name from various possible fields in Nominatim response
+                        // Priority: city > town > village > municipality > county > state
+                        cityName = address.optString("city", "");
+                        if (cityName.isEmpty()) {
+                            cityName = address.optString("town", "");
+                        }
+                        if (cityName.isEmpty()) {
+                            cityName = address.optString("village", "");
+                        }
+                        if (cityName.isEmpty()) {
+                            cityName = address.optString("municipality", "");
+                        }
+                        if (cityName.isEmpty()) {
+                            cityName = address.optString("county", "");
+                        }
+                        if (cityName.isEmpty()) {
+                            cityName = address.optString("state", "");
+                        }
+                        
+                        // Get country
+                        country = address.optString("country", "");
+                        
+                    } catch (JSONException e) {
+                        Log.e(TAG, "Error parsing address object: " + e.getMessage());
+                    }
+                }
+                
+                // Fallback: parse from display_name if address is not available or city name is empty
+                if (cityName.isEmpty()) {
+                    String displayName = place.optString("display_name", "");
+                    if (!displayName.isEmpty()) {
+                        // Parse display_name format: "City, State, Country" or "City, Country"
+                        String[] parts = displayName.split(",");
+                        if (parts.length > 0) {
+                            cityName = parts[0].trim();
+                        }
+                        // Get country from the last part
+                        if (parts.length > 1) {
+                            country = parts[parts.length - 1].trim();
+                        }
+                    }
+                }
+                
+                // Use place name as fallback if still empty
+                if (cityName.isEmpty()) {
+                    cityName = place.optString("name", "");
+                }
+                
+                // Only add if we have valid city name and coordinates
+                if (!cityName.isEmpty()) {
+                    JSONObject cityJson = new JSONObject();
+                    cityJson.put("name", cityName);
+                    cityJson.put("country", country);
+                    cityJson.put("lat", lat);
+                    cityJson.put("lon", lon);
+                    
+                    convertedResults.put(cityJson);
+                    Log.d(TAG, "Added suggestion " + (convertedResults.length()) + ": " + cityName + ", " + country);
+                } else {
+                    Log.w(TAG, "Skipping place " + i + " - no city name found");
+                }
+            }
+            
+            Log.d(TAG, "Converted " + convertedResults.length() + " suggestions");
+            
+            // Call onSuggestionsReceived with converted format
+            if (convertedResults.length() > 0) {
+                onSuggestionsReceived(convertedResults);
+            } else {
+                // No valid suggestions found
+                Log.w(TAG, "No valid suggestions found after parsing");
+                runOnUiThread(() -> {
+                    searchResults.clear();
+                    rvSearchResults.setVisibility(View.GONE);
+                    searchResultsAdapter.notifyDataSetChanged();
+                });
+            }
+            
+        } catch (JSONException e) {
+            Log.e(TAG, "Error parsing Nominatim response: " + e.getMessage(), e);
+            runOnUiThread(() -> {
+                searchResults.clear();
+                rvSearchResults.setVisibility(View.GONE);
+                searchResultsAdapter.notifyDataSetChanged();
+            });
+        }
     }
 
     /**
      * Receives city suggestions from backend.
      * Call this method from your backend/API response handler.
      * 
-     * @param suggestions JSONArray of city suggestions (maximum 5 will be displayed)
+     * @param suggestions JSONArray of city suggestions (maximum 5 will be
+     *                    displayed)
      * 
-     * Expected JSON format:
-     * [
-     *   {"name": "Singapore", "country": "Singapore", "lat": 1.3521, "lon": 103.8198},
-     *   {"name": "Sydney", "country": "Australia", "lat": -33.8688, "lon": 151.2093},
-     *   ...
-     * ]
+     *                    Expected JSON format:
+     *                    [
+     *                    {"name": "Singapore", "country": "Singapore", "lat":
+     *                    1.3521, "lon": 103.8198},
+     *                    {"name": "Sydney", "country": "Australia", "lat":
+     *                    -33.8688, "lon": 151.2093},
+     *                    ...
+     *                    ]
      */
     public void onSuggestionsReceived(JSONArray suggestions) {
+        Log.d(TAG, "onSuggestionsReceived called with " + (suggestions != null ? suggestions.length() : 0) + " suggestions");
         runOnUiThread(() -> {
             searchResults.clear();
             
             if (suggestions == null || suggestions.length() == 0) {
+                Log.d(TAG, "No suggestions to display");
                 rvSearchResults.setVisibility(View.GONE);
                 searchResultsAdapter.notifyDataSetChanged();
                 return;
@@ -157,6 +339,7 @@ public class ManageCitiesActivity extends AppCompatActivity {
             
             // Parse up to MAX_SUGGESTIONS (5) items
             int count = Math.min(suggestions.length(), MAX_SUGGESTIONS);
+            Log.d(TAG, "Adding " + count + " suggestions to list");
             
             for (int i = 0; i < count; i++) {
                 try {
@@ -170,16 +353,23 @@ public class ManageCitiesActivity extends AppCompatActivity {
                     if (!name.isEmpty()) {
                         City city = new City(name, country, lat, lon);
                         searchResults.add(city);
+                        Log.d(TAG, "Added city to searchResults: " + name);
+                    } else {
+                        Log.w(TAG, "Skipping city at index " + i + " - empty name");
                     }
                     
                 } catch (JSONException e) {
                     Log.e(TAG, "Error parsing city at index " + i + ": " + e.getMessage());
                 }
             }
+
+            Log.d(TAG, "Total searchResults size: " + searchResults.size());
             
             if (searchResults.isEmpty()) {
+                Log.d(TAG, "searchResults is empty, hiding RecyclerView");
                 rvSearchResults.setVisibility(View.GONE);
             } else {
+                Log.d(TAG, "Showing RecyclerView with " + searchResults.size() + " items");
                 rvSearchResults.setVisibility(View.VISIBLE);
             }
             searchResultsAdapter.notifyDataSetChanged();
@@ -188,6 +378,7 @@ public class ManageCitiesActivity extends AppCompatActivity {
 
     /**
      * Convenience method to receive suggestions as a JSON string.
+     * 
      * @param jsonString JSON array string of city suggestions
      */
     public void onSuggestionsReceived(String jsonString) {
@@ -484,12 +675,8 @@ public class ManageCitiesActivity extends AppCompatActivity {
                     return;
                 }
 
-                dbHelper.addCity(city);
-                loadCities();
-                etSearchCity.setText("");
-                rvSearchResults.setVisibility(View.GONE);
-                Toast.makeText(ManageCitiesActivity.this, 
-                        R.string.city_added, Toast.LENGTH_SHORT).show();
+                // Fetch weather data before adding to database
+                fetchWeatherDataAndAddCity(city);
             });
         }
 
@@ -507,6 +694,105 @@ public class ManageCitiesActivity extends AppCompatActivity {
                 tvSearchResultCountry = itemView.findViewById(R.id.tvSearchResultCountry);
             }
         }
+    }
+
+    /**
+     * Fetch weather data from API and then add city to database
+     */
+    private void fetchWeatherDataAndAddCity(City city) {
+        // Show loading indicator (optional)
+        Toast.makeText(this, "Fetching weather data...", Toast.LENGTH_SHORT).show();
+        
+        // Fetch weather data using coordinates
+        WeatherDataAPI.getDataByCoordinates(
+            this,
+            city.getLatitude(),
+            city.getLongitude(),
+            OPENWEATHER_API_KEY,
+            new WeatherDataAPI.ApiCallback() {
+                @Override
+                public void onSuccess(String response) {
+                    try {
+                        // Parse weather data from OpenWeatherMap API response
+                        JSONObject weatherJson = new JSONObject(response);
+                        
+                        // Extract main weather data
+                        JSONObject main = weatherJson.getJSONObject("main");
+                        double temp = main.getDouble("temp");
+                        double tempMax = main.getDouble("temp_max");
+                        double tempMin = main.getDouble("temp_min");
+                        int humidity = main.optInt("humidity", 0);
+                        int pressure = main.optInt("pressure", 0);
+                        
+                        // Extract weather condition
+                        JSONArray weatherArray = weatherJson.getJSONArray("weather");
+                        String weatherCondition = "Clear";
+                        if (weatherArray.length() > 0) {
+                            JSONObject weather = weatherArray.getJSONObject(0);
+                            weatherCondition = weather.getString("main");
+                        }
+                        
+                        // Extract sunrise/sunset
+                        JSONObject sys = weatherJson.optJSONObject("sys");
+                        int sunrise = 0;
+                        int sunset = 0;
+                        if (sys != null) {
+                            sunrise = sys.optInt("sunrise", 0);
+                            sunset = sys.optInt("sunset", 0);
+                        }
+                        
+                        // Update city with weather data
+                        city.setTemperature(String.valueOf((int) Math.round(temp)));
+                        city.setWeatherCondition(weatherCondition);
+                        city.setHighTemp(String.valueOf((int) Math.round(tempMax)));
+                        city.setLowTemp(String.valueOf((int) Math.round(tempMin)));
+                        city.setHumidity(humidity);
+                        city.setPressure(pressure);
+                        city.setSunrise(sunrise);
+                        city.setSunset(sunset);
+                        
+                        // Add city to database
+                        runOnUiThread(() -> {
+                            long id = dbHelper.addCity(city);
+                            city.setId((int) id);
+                            loadCities();
+                            etSearchCity.setText("");
+                            rvSearchResults.setVisibility(View.GONE);
+                            Toast.makeText(ManageCitiesActivity.this,
+                                    R.string.city_added, Toast.LENGTH_SHORT).show();
+                        });
+                        
+                    } catch (JSONException e) {
+                        Log.e(TAG, "Error parsing weather data: " + e.getMessage());
+                        // Add city without weather data if parsing fails
+                        runOnUiThread(() -> {
+                            long id = dbHelper.addCity(city);
+                            city.setId((int) id);
+                            loadCities();
+                            etSearchCity.setText("");
+                            rvSearchResults.setVisibility(View.GONE);
+                            Toast.makeText(ManageCitiesActivity.this,
+                                    R.string.city_added, Toast.LENGTH_SHORT).show();
+                        });
+                    }
+                }
+
+                @Override
+                public void onError(String error) {
+                    Log.e(TAG, "Error fetching weather data: " + error);
+                    // Add city without weather data if API call fails
+                    runOnUiThread(() -> {
+                        long id = dbHelper.addCity(city);
+                        city.setId((int) id);
+                        loadCities();
+                        etSearchCity.setText("");
+                        rvSearchResults.setVisibility(View.GONE);
+                        Toast.makeText(ManageCitiesActivity.this,
+                                R.string.city_added, Toast.LENGTH_SHORT).show();
+                    });
+                }
+            }
+        );
     }
 
     @Override

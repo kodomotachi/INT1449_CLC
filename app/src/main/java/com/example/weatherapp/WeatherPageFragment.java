@@ -12,13 +12,15 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.weatherapp.model.City;
+
 import java.util.ArrayList;
 import java.util.List;
 
 public class WeatherPageFragment extends Fragment {
 
     private static final String ARG_CITY = "city";
-    
+
     private City city;
     private TextView tvLocationName;
     private TextView tvCurrentTemp;
@@ -26,7 +28,7 @@ public class WeatherPageFragment extends Fragment {
     private TextView tvLocationPermission;
     private RecyclerView rvHourlyForecast;
     private HourlyForecastAdapter hourlyForecastAdapter;
-    
+
     private TextView tvUvValue;
     private TextView tvHumidityValue;
     private TextView tvRealFeelValue;
@@ -52,26 +54,26 @@ public class WeatherPageFragment extends Fragment {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
             city = new City(
-                getArguments().getInt("city_id"),
-                getArguments().getString("city_name"),
-                getArguments().getString("city_country"),
-                getArguments().getDouble("city_lat"),
-                getArguments().getDouble("city_lon"),
-                getArguments().getBoolean("city_default")
-            );
+                    getArguments().getInt("city_id"),
+                    getArguments().getString("city_name"),
+                    getArguments().getString("city_country"),
+                    getArguments().getDouble("city_lat"),
+                    getArguments().getDouble("city_lon"),
+                    getArguments().getBoolean("city_default"));
         }
     }
 
     @Nullable
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
+            @Nullable Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_weather_page, container, false);
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        
+
         initializeViews(view);
         setupUI();
         setupHourlyForecast();
@@ -83,7 +85,7 @@ public class WeatherPageFragment extends Fragment {
         tvWeatherCondition = view.findViewById(R.id.tvWeatherCondition);
         tvLocationPermission = view.findViewById(R.id.tvLocationPermission);
         rvHourlyForecast = view.findViewById(R.id.rvHourlyForecast);
-        
+
         tvUvValue = view.findViewById(R.id.tvUvValue);
         tvHumidityValue = view.findViewById(R.id.tvHumidityValue);
         tvRealFeelValue = view.findViewById(R.id.tvRealFeelValue);
@@ -96,11 +98,11 @@ public class WeatherPageFragment extends Fragment {
         if (city != null) {
             tvLocationName.setText(city.getName());
         }
-        
+
         // Sample data - replace with actual weather data
         tvCurrentTemp.setText("28°");
         tvWeatherCondition.setText("Cloudy  30°/24°");
-        
+
         tvUvValue.setText(R.string.moderate);
         tvHumidityValue.setText("88%");
         tvRealFeelValue.setText("28°");
@@ -123,12 +125,9 @@ public class WeatherPageFragment extends Fragment {
         hourlyForecasts.add(new HourlyForecast("26°", "20:00", "Force 2", R.drawable.ic_cloud));
 
         hourlyForecastAdapter = new HourlyForecastAdapter(hourlyForecasts);
-        LinearLayoutManager layoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false);
+        LinearLayoutManager layoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL,
+                false);
         rvHourlyForecast.setLayoutManager(layoutManager);
         rvHourlyForecast.setAdapter(hourlyForecastAdapter);
     }
 }
-
-
-
-

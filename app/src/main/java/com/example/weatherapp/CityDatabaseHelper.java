@@ -6,6 +6,8 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
+import com.example.weatherapp.model.City;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -71,9 +73,9 @@ public class CityDatabaseHelper extends SQLiteOpenHelper {
     public boolean cityExists(String cityName) {
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.query(TABLE_CITIES,
-                new String[]{COLUMN_ID},
+                new String[] { COLUMN_ID },
                 COLUMN_NAME + "=?",
-                new String[]{cityName},
+                new String[] { cityName },
                 null, null, null);
         boolean exists = cursor.getCount() > 0;
         cursor.close();
@@ -84,9 +86,10 @@ public class CityDatabaseHelper extends SQLiteOpenHelper {
     public City getCity(int id) {
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.query(TABLE_CITIES,
-                new String[]{COLUMN_ID, COLUMN_NAME, COLUMN_COUNTRY, COLUMN_LATITUDE, COLUMN_LONGITUDE, COLUMN_IS_DEFAULT},
+                new String[] { COLUMN_ID, COLUMN_NAME, COLUMN_COUNTRY, COLUMN_LATITUDE, COLUMN_LONGITUDE,
+                        COLUMN_IS_DEFAULT },
                 COLUMN_ID + "=?",
-                new String[]{String.valueOf(id)},
+                new String[] { String.valueOf(id) },
                 null, null, null, null);
 
         City city = null;
@@ -97,8 +100,7 @@ public class CityDatabaseHelper extends SQLiteOpenHelper {
                     cursor.getString(2),
                     cursor.getDouble(3),
                     cursor.getDouble(4),
-                    cursor.getInt(5) == 1
-            );
+                    cursor.getInt(5) == 1);
             cursor.close();
         }
         db.close();
@@ -107,7 +109,8 @@ public class CityDatabaseHelper extends SQLiteOpenHelper {
 
     public List<City> getAllCities() {
         List<City> cities = new ArrayList<>();
-        String selectQuery = "SELECT * FROM " + TABLE_CITIES + " ORDER BY " + COLUMN_IS_DEFAULT + " DESC, " + COLUMN_ID + " ASC";
+        String selectQuery = "SELECT * FROM " + TABLE_CITIES + " ORDER BY " + COLUMN_IS_DEFAULT + " DESC, " + COLUMN_ID
+                + " ASC";
 
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.rawQuery(selectQuery, null);
@@ -120,8 +123,7 @@ public class CityDatabaseHelper extends SQLiteOpenHelper {
                         cursor.getString(2),
                         cursor.getDouble(3),
                         cursor.getDouble(4),
-                        cursor.getInt(5) == 1
-                );
+                        cursor.getInt(5) == 1);
                 cities.add(city);
             } while (cursor.moveToNext());
         }
@@ -144,16 +146,17 @@ public class CityDatabaseHelper extends SQLiteOpenHelper {
 
     public void deleteCity(int id) {
         SQLiteDatabase db = this.getWritableDatabase();
-        db.delete(TABLE_CITIES, COLUMN_ID + "=?", new String[]{String.valueOf(id)});
+        db.delete(TABLE_CITIES, COLUMN_ID + "=?", new String[] { String.valueOf(id) });
         db.close();
     }
 
     public City getDefaultCity() {
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.query(TABLE_CITIES,
-                new String[]{COLUMN_ID, COLUMN_NAME, COLUMN_COUNTRY, COLUMN_LATITUDE, COLUMN_LONGITUDE, COLUMN_IS_DEFAULT},
+                new String[] { COLUMN_ID, COLUMN_NAME, COLUMN_COUNTRY, COLUMN_LATITUDE, COLUMN_LONGITUDE,
+                        COLUMN_IS_DEFAULT },
                 COLUMN_IS_DEFAULT + "=?",
-                new String[]{"1"},
+                new String[] { "1" },
                 null, null, null, null);
 
         City city = null;
@@ -164,15 +167,10 @@ public class CityDatabaseHelper extends SQLiteOpenHelper {
                     cursor.getString(2),
                     cursor.getDouble(3),
                     cursor.getDouble(4),
-                    true
-            );
+                    true);
             cursor.close();
         }
         db.close();
         return city;
     }
 }
-
-
-
-

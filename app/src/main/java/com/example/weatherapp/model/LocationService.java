@@ -63,6 +63,7 @@ public class LocationService {
         queue.add(jsonArrayRequest);
     }
 
+    // use for cities suggestion
     public void fetchSuggestion(Context context, String location, final NominatimCallback callback) {
         String encodedLocation;
 

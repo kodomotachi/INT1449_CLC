@@ -5,6 +5,7 @@ color blue_accent
 color light_gray
 color orange_accent
 color semi_transparent_white
+color suggestion_bg
 color text_dark
 color text_gray
 color transparent
@@ -40,7 +41,9 @@ id main
 id rvCities
 id rvHourlyForecast
 id rvSearchResults
+id searchContainer
 id switchNightUpdate
+id toolbar
 id tvCityName
 id tvCityTemp
 id tvCityWeather

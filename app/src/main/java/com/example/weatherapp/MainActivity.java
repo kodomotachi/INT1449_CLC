@@ -17,6 +17,8 @@ import androidx.fragment.app.FragmentActivity;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
 import androidx.viewpager2.widget.ViewPager2;
 
+import com.example.weatherapp.model.City;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,7 +28,7 @@ public class MainActivity extends AppCompatActivity {
     private ViewPager2 viewPager;
     private ImageButton btnAdd;
     private ImageButton btnMenu;
-    
+
     private CityDatabaseHelper dbHelper;
     private List<City> cities;
     private WeatherPagerAdapter pagerAdapter;
@@ -34,9 +36,9 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-//        EdgeToEdge.enable(this);
+        // EdgeToEdge.enable(this);
         setContentView(R.layout.activity_main);
-        
+
         dbHelper = new CityDatabaseHelper(this);
 
         // Setup window insets
@@ -51,10 +53,10 @@ public class MainActivity extends AppCompatActivity {
 
         // Setup ViewPager
         setupViewPager();
-        
+
         // Setup click listeners
         setupClickListeners();
-        
+
         // Set background
         setWeatherBackground("cloudy");
     }
@@ -69,10 +71,10 @@ public class MainActivity extends AppCompatActivity {
     private void setupViewPager() {
         cities = new ArrayList<>();
         loadCities();
-        
+
         pagerAdapter = new WeatherPagerAdapter(this, cities);
         viewPager.setAdapter(pagerAdapter);
-        
+
         // Optional: Add page transformer for smooth transitions
         viewPager.setPageTransformer((page, position) -> {
             page.setAlpha(1 - Math.abs(position));
@@ -82,7 +84,7 @@ public class MainActivity extends AppCompatActivity {
     private void loadCities() {
         cities.clear();
         cities.addAll(dbHelper.getAllCities());
-        
+
         // If no cities, add default
         if (cities.isEmpty()) {
             City defaultCity = new City("Binh Tan", "Vietnam", 10.7333, 106.6167);
@@ -91,7 +93,7 @@ public class MainActivity extends AppCompatActivity {
             defaultCity.setId((int) id);
             cities.add(defaultCity);
         }
-        
+
         if (pagerAdapter != null) {
             pagerAdapter.notifyDataSetChanged();
         }
@@ -102,7 +104,7 @@ public class MainActivity extends AppCompatActivity {
             Intent intent = new Intent(MainActivity.this, ManageCitiesActivity.class);
             startActivity(intent);
         });
-        
+
         btnMenu.setOnClickListener(v -> {
             Intent intent = new Intent(MainActivity.this, SettingsActivity.class);
             startActivity(intent);
@@ -135,7 +137,7 @@ public class MainActivity extends AppCompatActivity {
         // Reload cities when returning from ManageCitiesActivity
         int currentItem = viewPager.getCurrentItem();
         loadCities();
-        
+
         // Restore position if possible
         if (currentItem < cities.size()) {
             viewPager.setCurrentItem(currentItem, false);
