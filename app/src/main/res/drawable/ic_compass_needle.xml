@@ -1,0 +1,13 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="48dp"
+    android:height="48dp"
+    android:viewportWidth="48"
+    android:viewportHeight="48">
+    <!-- Needle arrow pointing UP (north). Rotate this view by wind_direction_10m degrees. -->
+    <path
+        android:fillColor="#000000"
+        android:pathData="M24,6l5.5,16h-11z" />
+    <path
+        android:fillColor="#000000"
+        android:pathData="M24,42l-5.5,-16h11z" />
+</vector>

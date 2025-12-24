@@ -17,14 +17,6 @@
         android:textStyle="bold"
         android:layout_marginBottom="8dp"/>
 
-    <ImageView
-        android:id="@+id/ivHourlyIcon"
-        android:layout_width="32dp"
-        android:layout_height="32dp"
-        android:src="@drawable/ic_cloud"
-        android:layout_marginBottom="8dp"
-        android:contentDescription="Weather icon"/>
-
     <TextView
         android:id="@+id/tvHourlyWind"
         android:layout_width="wrap_content"
@@ -43,5 +35,3 @@
         android:textColor="@color/text_gray"/>
 
 </LinearLayout>
-
-

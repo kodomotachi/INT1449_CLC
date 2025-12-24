@@ -3,7 +3,6 @@ package com.example.weatherapp;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -33,7 +32,6 @@ public class HourlyForecastAdapter extends RecyclerView.Adapter<HourlyForecastAd
         holder.tvHourlyTemp.setText(forecast.getTemperature());
         holder.tvHourlyTime.setText(forecast.getTime());
         holder.tvHourlyWind.setText(forecast.getWindForce());
-        holder.ivHourlyIcon.setImageResource(forecast.getIconResource());
     }
 
     @Override
@@ -41,18 +39,21 @@ public class HourlyForecastAdapter extends RecyclerView.Adapter<HourlyForecastAd
         return hourlyForecasts.size();
     }
 
+    public void setHourlyForecasts(List<HourlyForecast> hourlyForecasts) {
+        this.hourlyForecasts = hourlyForecasts;
+        notifyDataSetChanged();
+    }
+
     public static class HourlyForecastViewHolder extends RecyclerView.ViewHolder {
         TextView tvHourlyTemp;
         TextView tvHourlyTime;
         TextView tvHourlyWind;
-        ImageView ivHourlyIcon;
 
         public HourlyForecastViewHolder(@NonNull View itemView) {
             super(itemView);
             tvHourlyTemp = itemView.findViewById(R.id.tvHourlyTemp);
             tvHourlyTime = itemView.findViewById(R.id.tvHourlyTime);
             tvHourlyWind = itemView.findViewById(R.id.tvHourlyWind);
-            ivHourlyIcon = itemView.findViewById(R.id.ivHourlyIcon);
         }
     }
 }

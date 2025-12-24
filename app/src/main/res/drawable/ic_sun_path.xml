@@ -1,0 +1,16 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="72dp"
+    android:height="48dp"
+    android:viewportWidth="72"
+    android:viewportHeight="48">
+    <!-- Sun path / sunrise-sunset arc (tintable) -->
+    <path
+        android:fillColor="#000000"
+        android:pathData="M8,40h56v4H8z" />
+    <path
+        android:fillColor="#000000"
+        android:pathData="M12,40c6,-18 18,-28 24,-28s18,10 24,28h-4c-5,-16 -15,-24 -20,-24s-15,8 -20,24h-4z" />
+    <path
+        android:fillColor="#000000"
+        android:pathData="M36,10a6,6 0,1 0,0 12a6,6 0,0 0,0 -12z" />
+</vector>

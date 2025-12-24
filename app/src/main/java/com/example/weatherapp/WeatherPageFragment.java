@@ -1,9 +1,12 @@
 package com.example.weatherapp;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -13,6 +16,11 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.weatherapp.model.City;
+import com.example.weatherapp.model.WeatherDataAPI;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,6 +28,7 @@ import java.util.List;
 public class WeatherPageFragment extends Fragment {
 
     private static final String ARG_CITY = "city";
+    private static final String TAG = "WeatherPageFragment";
 
     private City city;
     private TextView tvLocationName;
@@ -28,13 +37,23 @@ public class WeatherPageFragment extends Fragment {
     private TextView tvLocationPermission;
     private RecyclerView rvHourlyForecast;
     private HourlyForecastAdapter hourlyForecastAdapter;
+    private final List<HourlyForecast> hourlyForecasts = new ArrayList<>();
 
     private TextView tvUvValue;
     private TextView tvHumidityValue;
     private TextView tvRealFeelValue;
     private TextView tvWindValue;
+    private TextView tvWindDirection;
     private TextView tvSunsetValue;
+    private TextView tvSunriseSmall;
+    private TextView tvSunsetSmall;
     private TextView tvPressureValue;
+
+    private TextView tvUvIndexNumber;
+    private ProgressBar pbUv;
+    private ProgressBar pbHumidity;
+    private ProgressBar pbRealFeel;
+    private ImageView ivWindNeedle;
 
     public static WeatherPageFragment newInstance(City city) {
         WeatherPageFragment fragment = new WeatherPageFragment();
@@ -87,11 +106,20 @@ public class WeatherPageFragment extends Fragment {
         rvHourlyForecast = view.findViewById(R.id.rvHourlyForecast);
 
         tvUvValue = view.findViewById(R.id.tvUvValue);
+        tvUvIndexNumber = view.findViewById(R.id.tvUvIndexNumber);
         tvHumidityValue = view.findViewById(R.id.tvHumidityValue);
         tvRealFeelValue = view.findViewById(R.id.tvRealFeelValue);
         tvWindValue = view.findViewById(R.id.tvWindValue);
+        tvWindDirection = view.findViewById(R.id.tvWindDirection);
         tvSunsetValue = view.findViewById(R.id.tvSunsetValue);
+        tvSunriseSmall = view.findViewById(R.id.tvSunriseSmall);
+        tvSunsetSmall = view.findViewById(R.id.tvSunsetSmall);
         tvPressureValue = view.findViewById(R.id.tvPressureValue);
+
+        pbUv = view.findViewById(R.id.pbUv);
+        pbHumidity = view.findViewById(R.id.pbHumidity);
+        pbRealFeel = view.findViewById(R.id.pbRealFeel);
+        ivWindNeedle = view.findViewById(R.id.ivWindNeedle);
     }
 
     private void setupUI() {
@@ -99,35 +127,333 @@ public class WeatherPageFragment extends Fragment {
             tvLocationName.setText(city.getName());
         }
 
-        // Sample data - replace with actual weather data
-        tvCurrentTemp.setText("28°");
-        tvWeatherCondition.setText("Cloudy  30°/24°");
+        // Load actual weather data from API for this city and update UI
+        fetchAndBindWeather();
+    }
 
-        tvUvValue.setText(R.string.moderate);
-        tvHumidityValue.setText("88%");
-        tvRealFeelValue.setText("28°");
-        tvWindValue.setText("Force 2");
-        tvSunsetValue.setText("17:28");
-        tvPressureValue.setText("1007");
+    private void fetchAndBindWeather() {
+        if (getContext() == null || city == null) {
+            return;
+        }
+
+        WeatherDataAPI.getDataByCoordinates(
+                getContext(),
+                city.getLatitude(),
+                city.getLongitude(),
+                new WeatherDataAPI.ApiCallback() {
+                    @Override
+                    public void onSuccess(String response) {
+                        try {
+                            JSONObject root = new JSONObject(response);
+                            bindWeatherResponse(root);
+                        } catch (JSONException e) {
+                            Log.e(TAG, "Error parsing weather data: " + e.getMessage(), e);
+                        }
+                    }
+
+                    @Override
+                    public void onError(String error) {
+                        Log.e(TAG, "Error fetching weather data: " + error);
+                    }
+                });
+    }
+
+    private void bindWeatherResponse(JSONObject root) throws JSONException {
+        JSONObject current = root.optJSONObject("current");
+        JSONObject daily = root.optJSONObject("daily");
+        JSONObject hourly = root.optJSONObject("hourly");
+
+        if (current == null) {
+            return;
+        }
+
+        double tempC = current.optDouble("temperature_2m", Double.NaN);
+        double apparentC = current.optDouble("apparent_temperature", tempC);
+        int humidity = current.optInt("relative_humidity_2m", 0);
+        double pressure = current.optDouble("pressure_msl", 0.0);
+        int weatherCode = current.optInt("weather_code", 0);
+        double windSpeedKmh = current.optDouble("wind_speed_10m", 0.0);
+        double windDir = current.optDouble("wind_direction_10m", 0.0);
+        String currentTime = current.optString("time", "");
+
+        // Daily high/low and sunrise/sunset
+        double tempMaxC = tempC;
+        double tempMinC = tempC;
+        String sunriseIso = "";
+        String sunsetIso = "";
+        int uvDailyMax = 0;
+        if (daily != null) {
+            JSONArray maxArr = daily.optJSONArray("temperature_2m_max");
+            JSONArray minArr = daily.optJSONArray("temperature_2m_min");
+            if (maxArr != null && maxArr.length() > 0) {
+                tempMaxC = maxArr.optDouble(0, tempC);
+            }
+            if (minArr != null && minArr.length() > 0) {
+                tempMinC = minArr.optDouble(0, tempC);
+            }
+
+            JSONArray sunriseArr = daily.optJSONArray("sunrise");
+            JSONArray sunsetArr = daily.optJSONArray("sunset");
+            if (sunriseArr != null && sunriseArr.length() > 0) {
+                sunriseIso = sunriseArr.optString(0, "");
+            }
+            if (sunsetArr != null && sunsetArr.length() > 0) {
+                sunsetIso = sunsetArr.optString(0, "");
+            }
+
+            JSONArray uvMaxArr = daily.optJSONArray("uv_index_max");
+            if (uvMaxArr != null && uvMaxArr.length() > 0) {
+                uvDailyMax = (int) Math.round(uvMaxArr.optDouble(0, 0.0));
+            }
+        }
+
+        // UV: prefer current.uv_index if present; otherwise map hourly uv_index to current time; fallback to daily max
+        int uvIndex = 0;
+        if (current.has("uv_index")) {
+            uvIndex = (int) Math.round(current.optDouble("uv_index", 0.0));
+        } else if (hourly != null) {
+            JSONArray times = hourly.optJSONArray("time");
+            JSONArray uvs = hourly.optJSONArray("uv_index");
+            if (times != null && uvs != null) {
+                int match = -1;
+                for (int i = 0; i < times.length(); i++) {
+                    if (currentTime.equals(times.optString(i, ""))) {
+                        match = i;
+                        break;
+                    }
+                }
+                if (match >= 0) {
+                    uvIndex = (int) Math.round(uvs.optDouble(match, 0.0));
+                } else if (uvs.length() > 0) {
+                    uvIndex = (int) Math.round(uvs.optDouble(0, 0.0));
+                }
+            }
+        } else {
+            uvIndex = uvDailyMax;
+        }
+
+        final int uvIndexFinal = clampInt(uvIndex, 0, 11);
+        final int humidityFinal = clampInt(humidity, 0, 100);
+        final int pressureHpa = (int) Math.round(pressure);
+        final float windDirFinal = (float) windDir;
+        final String conditionFinal = convertWeatherCodeToCondition(weatherCode);
+        final String highFinal = formatTempNoUnit(tempMaxC);
+        final String lowFinal = formatTempNoUnit(tempMinC);
+        final int realFeelProgressFinal = (int) Math.round(normalizeToPercent(apparentC, tempMinC, tempMaxC));
+        final String sunriseHHmmFinal = isoToHHmm(sunriseIso);
+        final String sunsetHHmmFinal = isoToHHmm(sunsetIso);
+
+        final List<HourlyForecast> hourlyListFinal = build24HourForecasts(hourly, currentTime);
+
+        if (getActivity() == null) {
+            return;
+        }
+
+        getActivity().runOnUiThread(() -> {
+            // Top summary
+            if (!Double.isNaN(tempC)) {
+                tvCurrentTemp.setText(formatTempNoUnit(tempC));
+            }
+
+            tvWeatherCondition.setText(conditionFinal + "  " + highFinal + "/" + lowFinal);
+
+            // UV
+            tvUvValue.setText(uvLevel(uvIndexFinal));
+            tvUvIndexNumber.setText(String.valueOf(uvIndexFinal));
+            if (pbUv != null) {
+                // pbUv max=110, progress=uv*10
+                pbUv.setProgress(uvIndexFinal * 10);
+            }
+
+            // Humidity
+            tvHumidityValue.setText(humidityFinal + "%");
+            if (pbHumidity != null) {
+                pbHumidity.setProgress(humidityFinal);
+            }
+
+            // Real feel (apparent temp)
+            if (!Double.isNaN(apparentC)) {
+                tvRealFeelValue.setText(formatTempNoUnit(apparentC));
+            }
+            if (pbRealFeel != null) {
+                pbRealFeel.setProgress(realFeelProgressFinal);
+            }
+
+            // Wind
+            tvWindValue.setText(UnitConverter.formatWindSpeed(getContext(), windSpeedKmh));
+            tvWindDirection.setText(windDirectionToCardinal(windDirFinal));
+            if (ivWindNeedle != null) {
+                ivWindNeedle.setRotation(windDirFinal);
+            }
+
+            // Sunrise / Sunset
+            if (!sunsetHHmmFinal.isEmpty()) {
+                tvSunsetValue.setText(sunsetHHmmFinal);
+            }
+            if (tvSunriseSmall != null) {
+                tvSunriseSmall.setText(sunriseHHmmFinal.isEmpty() ? "--:--" : sunriseHHmmFinal);
+            }
+            if (tvSunsetSmall != null) {
+                tvSunsetSmall.setText(sunsetHHmmFinal.isEmpty() ? "--:--" : sunsetHHmmFinal);
+            }
+
+            // Pressure
+            tvPressureValue.setText(String.valueOf(pressureHpa));
+
+            if (hourlyForecastAdapter != null && hourlyListFinal != null && !hourlyListFinal.isEmpty()) {
+                hourlyForecastAdapter.setHourlyForecasts(hourlyListFinal);
+            }
+        });
+    }
+
+    private static int clampInt(int v, int min, int max) {
+        return Math.max(min, Math.min(max, v));
+    }
+
+    private static double normalizeToPercent(double value, double min, double max) {
+        if (Double.isNaN(value)) return 0.0;
+        if (max <= min) return 0.0;
+        double t = (value - min) / (max - min);
+        t = Math.max(0.0, Math.min(1.0, t));
+        return t * 100.0;
+    }
+
+    private String formatTempNoUnit(double celsius) {
+        if (getContext() == null) return "--°";
+        String unit = SettingsActivity.getTemperatureUnit(getContext());
+        double display = unit.equals(SettingsActivity.TEMP_FAHRENHEIT)
+                ? UnitConverter.celsiusToFahrenheit(celsius)
+                : celsius;
+        return String.format("%.0f%s", display, getString(R.string.degree_symbol));
+    }
+
+    private static String isoToHHmm(String iso) {
+        if (iso == null) return "";
+        int t = iso.indexOf('T');
+        if (t >= 0 && iso.length() >= t + 6) {
+            return iso.substring(t + 1, t + 6);
+        }
+        // already might be HH:MM
+        if (iso.length() >= 5 && iso.charAt(2) == ':') {
+            return iso.substring(0, 5);
+        }
+        return "";
+    }
+
+    private static String uvLevel(int uv) {
+        if (uv <= 2) return "Low";
+        if (uv <= 5) return "Moderate";
+        if (uv <= 7) return "High";
+        if (uv <= 10) return "Very High";
+        return "Extreme";
+    }
+
+    private static String windDirectionToCardinal(float degrees) {
+        // 8-point compass
+        float d = (degrees % 360 + 360) % 360;
+        if (d >= 337.5 || d < 22.5) return "North";
+        if (d < 67.5) return "North-East";
+        if (d < 112.5) return "East";
+        if (d < 157.5) return "South-East";
+        if (d < 202.5) return "South";
+        if (d < 247.5) return "South-West";
+        if (d < 292.5) return "West";
+        return "North-West";
+    }
+
+    private List<HourlyForecast> build24HourForecasts(JSONObject hourly, String currentTimeIso) {
+        if (hourly == null) return new ArrayList<>();
+
+        JSONArray times = hourly.optJSONArray("time");
+        JSONArray temps = hourly.optJSONArray("temperature_2m");
+        JSONArray codes = hourly.optJSONArray("weather_code");
+        JSONArray windSpeeds = hourly.optJSONArray("wind_speed_10m");
+        if (times == null || temps == null || codes == null || windSpeeds == null) return new ArrayList<>();
+
+        int start = 0;
+        boolean startIsActualNow = false;
+        if (currentTimeIso != null && !currentTimeIso.isEmpty()) {
+            for (int i = 0; i < times.length(); i++) {
+                if (currentTimeIso.equals(times.optString(i, ""))) {
+                    start = i;
+                    startIsActualNow = true;
+                    break;
+                }
+            }
+        }
+
+        // Ensure we always show a full set of 24 hours (next 24h). If we're too close to the end,
+        // shift the window back so we can still render 24 items.
+        if (times.length() >= 24 && start + 24 > times.length()) {
+            start = Math.max(0, times.length() - 24);
+            // If we shifted, the first item is no longer "Now"
+            startIsActualNow = false;
+        }
+
+        int end = Math.min(start + 24, times.length());
+        List<HourlyForecast> list = new ArrayList<>();
+        for (int i = start; i < end; i++) {
+            double tempC = temps.optDouble(i, Double.NaN);
+            String tempStr = Double.isNaN(tempC) ? "--°" : formatTempNoUnit(tempC);
+
+            String timeLabel = (i == start && startIsActualNow)
+                    ? getString(R.string.now)
+                    : isoToHHmm(times.optString(i, ""));
+
+            double windKmh = windSpeeds.optDouble(i, 0.0);
+            String windStr = UnitConverter.formatWindSpeed(getContext(), windKmh);
+
+            int code = codes.optInt(i, 0);
+            int iconRes = weatherCodeToIconRes(code);
+
+            list.add(new HourlyForecast(tempStr, timeLabel, windStr, iconRes));
+        }
+        return list;
+    }
+
+    private int weatherCodeToIconRes(int weatherCode) {
+        // WMO weather codes (Open-Meteo)
+        if (weatherCode == 0) return R.drawable.ic_sun; // clear
+        if (weatherCode <= 3) return R.drawable.ic_cloud; // cloudy
+        if (weatherCode <= 49) return R.drawable.ic_cloud; // fog
+        if (weatherCode <= 69) return R.drawable.ic_rain; // drizzle / rain
+        if (weatherCode <= 79) return R.drawable.ic_snow; // snow
+        if (weatherCode <= 84) return R.drawable.ic_rain; // rain showers
+        if (weatherCode <= 86) return R.drawable.ic_snow; // snow showers
+        if (weatherCode <= 99) return R.drawable.ic_rain; // thunderstorm
+        return R.drawable.ic_cloud;
     }
 
     private void setupHourlyForecast() {
-        List<HourlyForecast> hourlyForecasts = new ArrayList<>();
-        hourlyForecasts.add(new HourlyForecast("28°", "Now", "Force 2", R.drawable.ic_cloud));
-        hourlyForecasts.add(new HourlyForecast("30°", "12:00", "Force 2", R.drawable.ic_cloud));
-        hourlyForecasts.add(new HourlyForecast("29°", "13:00", "Force 2", R.drawable.ic_rain));
-        hourlyForecasts.add(new HourlyForecast("29°", "14:00", "Force 2", R.drawable.ic_rain));
-        hourlyForecasts.add(new HourlyForecast("29°", "15:00", "Force 2", R.drawable.ic_rain));
-        hourlyForecasts.add(new HourlyForecast("28°", "16:00", "Force 2", R.drawable.ic_rain));
-        hourlyForecasts.add(new HourlyForecast("28°", "17:00", "Force 2", R.drawable.ic_rain));
-        hourlyForecasts.add(new HourlyForecast("27°", "18:00", "Force 2", R.drawable.ic_cloud));
-        hourlyForecasts.add(new HourlyForecast("27°", "19:00", "Force 2", R.drawable.ic_cloud));
-        hourlyForecasts.add(new HourlyForecast("26°", "20:00", "Force 2", R.drawable.ic_cloud));
-
         hourlyForecastAdapter = new HourlyForecastAdapter(hourlyForecasts);
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL,
                 false);
         rvHourlyForecast.setLayoutManager(layoutManager);
         rvHourlyForecast.setAdapter(hourlyForecastAdapter);
+    }
+
+    /**
+     * Convert Open-Meteo weather code (WMO) to condition string.
+     */
+    private String convertWeatherCodeToCondition(int weatherCode) {
+        if (weatherCode == 0)
+            return "Clear";
+        if (weatherCode <= 3)
+            return "Cloudy";
+        if (weatherCode <= 49)
+            return "Foggy";
+        if (weatherCode <= 59)
+            return "Drizzle";
+        if (weatherCode <= 69)
+            return "Rainy";
+        if (weatherCode <= 79)
+            return "Snowy";
+        if (weatherCode <= 84)
+            return "Rainy";
+        if (weatherCode <= 86)
+            return "Snowy";
+        if (weatherCode <= 99)
+            return "Thunderstorm";
+        return "Clear";
     }
 }

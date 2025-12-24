@@ -52,11 +52,19 @@ public class WeatherDataAPI {
             double longitude,
             ApiCallback callback) {
         // Open-Meteo API endpoint with current weather and daily forecast parameters
-        // Current: temperature_2m, weather_code, relative_humidity_2m, pressure_msl, sunrise, sunset
-        // Daily: temperature_2m_max, temperature_2m_min (for today's high/low)
+        // Current: temperature_2m, apparent_temperature, weather_code, relative_humidity_2m,
+        //          pressure_msl, wind_speed_10m, wind_direction_10m
+        // Hourly: temperature_2m, weather_code, wind_speed_10m, uv_index
+        // (used to render 24-hour forecast icons + to get "current" UV if current.uv_index is not present)
+        // Daily: sunrise, sunset, temperature_2m_max, temperature_2m_min, uv_index_max
         String url = String.format(
                 Locale.US,
-                "%s?latitude=%.4f&longitude=%.4f&current=temperature_2m,weather_code,relative_humidity_2m,pressure_msl,sunrise,sunset&daily=temperature_2m_max,temperature_2m_min&timezone=auto&forecast_days=1",
+                "%s?latitude=%.4f&longitude=%.4f"
+                        + "&current=temperature_2m,apparent_temperature,weather_code,relative_humidity_2m,pressure_msl,wind_speed_10m,wind_direction_10m"
+                        + "&hourly=temperature_2m,weather_code,wind_speed_10m,uv_index"
+                        + "&daily=sunrise,sunset,temperature_2m_max,temperature_2m_min,uv_index_max"
+                        + "&temperature_unit=celsius&wind_speed_unit=kmh"
+                        + "&timezone=auto&forecast_days=2",
                 OPEN_METEO_BASE_URL,
                 latitude,
                 longitude);
