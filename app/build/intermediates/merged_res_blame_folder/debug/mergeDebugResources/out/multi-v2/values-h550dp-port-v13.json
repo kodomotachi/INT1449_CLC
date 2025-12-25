@@ -4,7 +4,7 @@
             "outputFile": "com.example.weatherapp-mergeDebugResources-33:/values-h550dp-port-v13/values-h550dp-port-v13.xml",
             "map": [
                 {
-                    "source": "C:\\Users\\qwert\\.gradle\\caches\\8.13\\transforms\\519ac23394117e5a231e7ddd1ee95cf5\\transformed\\material-1.13.0\\res\\values-h550dp-port-v13\\values-h550dp-port-v13.xml",
+                    "source": "/Users/kodomotachi/.gradle/caches/8.13/transforms/2c57f9223431c6445d384045909d3a9a/transformed/material-1.13.0/res/values-h550dp-port-v13/values-h550dp-port-v13.xml",
                     "from": {
                         "startLines": "2",
                         "startColumns": "4",

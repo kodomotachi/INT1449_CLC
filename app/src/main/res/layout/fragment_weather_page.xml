@@ -133,25 +133,26 @@
                         android:layout_marginTop="8dp"
                         android:text="@string/moderate"
                         android:textColor="@color/text_dark"
-                        android:textSize="24sp"
+                        android:textSize="32sp"
                         android:textStyle="bold" />
 
-                    <LinearLayout
+                    <FrameLayout
                         android:layout_width="match_parent"
                         android:layout_height="0dp"
                         android:layout_weight="1"
-                        android:gravity="center"
-                        android:orientation="vertical">
+                        android:foregroundGravity="center">
 
                         <FrameLayout
                             android:layout_width="76dp"
-                            android:layout_height="76dp">
+                            android:layout_height="76dp"
+                            android:layout_gravity="center">
 
                             <ProgressBar
                                 android:id="@+id/pbUv"
                                 style="?android:attr/progressBarStyleHorizontal"
                                 android:layout_width="match_parent"
                                 android:layout_height="match_parent"
+                                android:layout_margin="4dp"
                                 android:indeterminate="false"
                                 android:max="110"
                                 android:progress="30"
@@ -165,17 +166,7 @@
                                 android:src="@drawable/ic_uv"
                                 android:tint="@color/orange_accent" />
                         </FrameLayout>
-
-                        <TextView
-                            android:id="@+id/tvUvIndexNumber"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="6dp"
-                            android:text="3"
-                            android:textColor="@color/text_dark"
-                            android:textSize="18sp"
-                            android:textStyle="bold" />
-                    </LinearLayout>
+                    </FrameLayout>
 
                 </LinearLayout>
             </androidx.cardview.widget.CardView>
@@ -231,14 +222,15 @@
                                 style="?android:attr/progressBarStyleHorizontal"
                                 android:layout_width="match_parent"
                                 android:layout_height="match_parent"
+                                android:layout_margin="4dp"
                                 android:indeterminate="false"
                                 android:max="100"
                                 android:progress="88"
                                 android:progressDrawable="@drawable/ring_progress_blue" />
 
                             <ImageView
-                                android:layout_width="26dp"
-                                android:layout_height="26dp"
+                                android:layout_width="28dp"
+                                android:layout_height="28dp"
                                 android:layout_gravity="center"
                                 android:contentDescription="Humidity icon"
                                 android:src="@drawable/ic_droplet"
@@ -300,14 +292,15 @@
                                 style="?android:attr/progressBarStyleHorizontal"
                                 android:layout_width="match_parent"
                                 android:layout_height="match_parent"
+                                android:layout_margin="4dp"
                                 android:indeterminate="false"
                                 android:max="100"
                                 android:progress="60"
                                 android:progressDrawable="@drawable/ring_progress_green" />
 
                             <ImageView
-                                android:layout_width="26dp"
-                                android:layout_height="26dp"
+                                android:layout_width="28dp"
+                                android:layout_height="28dp"
                                 android:layout_gravity="center"
                                 android:contentDescription="Real feel icon"
                                 android:src="@drawable/ic_thermometer"
@@ -351,7 +344,7 @@
                         android:layout_marginTop="8dp"
                         android:text="Force 2"
                         android:textColor="@color/text_dark"
-                        android:textSize="24sp"
+                        android:textSize="32sp"
                         android:textStyle="bold" />
 
                     <FrameLayout
@@ -361,13 +354,14 @@
                         android:foregroundGravity="center">
 
                         <FrameLayout
-                            android:layout_width="86dp"
-                            android:layout_height="86dp"
+                            android:layout_width="76dp"
+                            android:layout_height="76dp"
                             android:layout_gravity="center">
 
                             <ImageView
-                                android:layout_width="match_parent"
-                                android:layout_height="match_parent"
+                                android:layout_width="60dp"
+                                android:layout_height="60dp"
+                                android:layout_gravity="center"
                                 android:alpha="0.25"
                                 android:contentDescription="Compass background"
                                 android:src="@drawable/ic_compass_bg"
@@ -375,8 +369,8 @@
 
                             <ImageView
                                 android:id="@+id/ivWindNeedle"
-                                android:layout_width="60dp"
-                                android:layout_height="60dp"
+                                android:layout_width="40dp"
+                                android:layout_height="40dp"
                                 android:layout_gravity="center"
                                 android:contentDescription="Wind direction needle"
                                 android:src="@drawable/ic_compass_needle"

@@ -4,7 +4,7 @@
             "outputFile": "com.example.weatherapp-mergeDebugResources-33:/values-ky/values-ky.xml",
             "map": [
                 {
-                    "source": "C:\\Users\\qwert\\.gradle\\caches\\8.13\\transforms\\819d55297a559bd5cfd33b158f303f90\\transformed\\appcompat-1.7.1\\res\\values-ky\\values-ky.xml",
+                    "source": "/Users/kodomotachi/.gradle/caches/8.13/transforms/24bf3ea377e31d16dc41ab995537721f/transformed/appcompat-1.7.1/res/values-ky/values-ky.xml",
                     "from": {
                         "startLines": "2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29",
                         "startColumns": "4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4",
@@ -21,7 +21,7 @@
                     }
                 },
                 {
-                    "source": "C:\\Users\\qwert\\.gradle\\caches\\8.13\\transforms\\d00ff9d211a2bde3667590ec62c503f4\\transformed\\core-1.13.0\\res\\values-ky\\values-ky.xml",
+                    "source": "/Users/kodomotachi/.gradle/caches/8.13/transforms/84de8ba8542f5ccaa00e9b81eed3f0e7/transformed/core-1.13.0/res/values-ky/values-ky.xml",
                     "from": {
                         "startLines": "2,3,4,5,6,7,8,9",
                         "startColumns": "4,4,4,4,4,4,4,4",
@@ -38,7 +38,7 @@
                     }
                 },
                 {
-                    "source": "C:\\Users\\qwert\\.gradle\\caches\\8.13\\transforms\\519ac23394117e5a231e7ddd1ee95cf5\\transformed\\material-1.13.0\\res\\values-ky\\values-ky.xml",
+                    "source": "/Users/kodomotachi/.gradle/caches/8.13/transforms/2c57f9223431c6445d384045909d3a9a/transformed/material-1.13.0/res/values-ky/values-ky.xml",
                     "from": {
                         "startLines": "2,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,74,75,76,77,78,79,80,81,82,83,84,85",
                         "startColumns": "4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4",

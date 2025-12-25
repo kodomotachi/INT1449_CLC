@@ -49,7 +49,6 @@ public class WeatherPageFragment extends Fragment {
     private TextView tvSunsetSmall;
     private TextView tvPressureValue;
 
-    private TextView tvUvIndexNumber;
     private ProgressBar pbUv;
     private ProgressBar pbHumidity;
     private ProgressBar pbRealFeel;
@@ -106,7 +105,6 @@ public class WeatherPageFragment extends Fragment {
         rvHourlyForecast = view.findViewById(R.id.rvHourlyForecast);
 
         tvUvValue = view.findViewById(R.id.tvUvValue);
-        tvUvIndexNumber = view.findViewById(R.id.tvUvIndexNumber);
         tvHumidityValue = view.findViewById(R.id.tvHumidityValue);
         tvRealFeelValue = view.findViewById(R.id.tvRealFeelValue);
         tvWindValue = view.findViewById(R.id.tvWindValue);
@@ -259,7 +257,6 @@ public class WeatherPageFragment extends Fragment {
 
             // UV
             tvUvValue.setText(uvLevel(uvIndexFinal));
-            tvUvIndexNumber.setText(String.valueOf(uvIndexFinal));
             if (pbUv != null) {
                 // pbUv max=110, progress=uv*10
                 pbUv.setProgress(uvIndexFinal * 10);
