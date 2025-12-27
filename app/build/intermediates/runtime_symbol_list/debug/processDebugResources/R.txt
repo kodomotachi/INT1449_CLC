@@ -4218,7 +4218,6 @@ int id tvInfoSubtitle 0x7f080214
 int id tvInfoTitle 0x7f080215
 int id tvInfoValue 0x7f080216
 int id tvLocationName 0x7f080217
-int id tvLocationPermission 0x7f080218
 int id tvPressureValue 0x7f080219
 int id tvRealFeelValue 0x7f08021a
 int id tvSearchResultCountry 0x7f08021b
@@ -4227,7 +4226,6 @@ int id tvSunriseSmall 0x7f08021d
 int id tvSunsetSmall 0x7f08021e
 int id tvSunsetValue 0x7f08021f
 int id tvTemperatureUnit 0x7f080220
-int id tvUvIndexNumber 0x7f080221
 int id tvUvValue 0x7f080222
 int id tvWeatherCondition 0x7f080223
 int id tvWindDirection 0x7f080224

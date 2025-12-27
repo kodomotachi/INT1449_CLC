@@ -26,18 +26,6 @@
             android:textSize="24sp"
             android:textStyle="bold" />
 
-        <!-- Location Permission -->
-        <TextView
-            android:id="@+id/tvLocationPermission"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="40dp"
-            android:drawableEnd="@android:drawable/ic_menu_directions"
-            android:drawablePadding="8dp"
-            android:text="@string/allow_location_access"
-            android:textColor="#CCFFFFFF"
-            android:textSize="14sp" />
-
         <!-- Current Temperature -->
         <TextView
             android:id="@+id/tvCurrentTemp"
@@ -85,8 +73,9 @@
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/rvHourlyForecast"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    android:layout_height="120dp"
                     android:orientation="horizontal"
+                    android:scrollbars="horizontal"
                     tools:listitem="@layout/item_hourly_forecast" />
 
             </LinearLayout>
@@ -378,7 +367,7 @@
                         </FrameLayout>
                     </FrameLayout>
 
-                </LinearLayout>
+                </LinearLayout>breathe
             </androidx.cardview.widget.CardView>
 
             <!-- Sun (Sunrise/Sunset) Card -->

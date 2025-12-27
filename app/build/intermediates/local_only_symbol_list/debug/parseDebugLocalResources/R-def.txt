@@ -74,7 +74,6 @@ id tvInfoSubtitle
 id tvInfoTitle
 id tvInfoValue
 id tvLocationName
-id tvLocationPermission
 id tvPressureValue
 id tvRealFeelValue
 id tvSearchResultCountry
@@ -83,7 +82,6 @@ id tvSunriseSmall
 id tvSunsetSmall
 id tvSunsetValue
 id tvTemperatureUnit
-id tvUvIndexNumber
 id tvUvValue
 id tvWeatherCondition
 id tvWindDirection

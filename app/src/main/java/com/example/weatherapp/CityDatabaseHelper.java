@@ -173,4 +173,54 @@ public class CityDatabaseHelper extends SQLiteOpenHelper {
         db.close();
         return city;
     }
+
+    /**
+     * Update existing city to be default and set all others to non-default
+     */
+    public void setDefaultCity(int cityId) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        
+        // Set all cities to non-default first
+        ContentValues values = new ContentValues();
+        values.put(COLUMN_IS_DEFAULT, 0);
+        db.update(TABLE_CITIES, values, null, null);
+        
+        // Set the specified city as default
+        values = new ContentValues();
+        values.put(COLUMN_IS_DEFAULT, 1);
+        db.update(TABLE_CITIES, values, COLUMN_ID + "=?", new String[] { String.valueOf(cityId) });
+        
+        db.close();
+    }
+
+    /**
+     * Check if a city with given coordinates already exists
+     */
+    public City getCityByCoordinates(double latitude, double longitude) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        // Use approximate matching (within 0.01 degrees, ~1km)
+        String selectQuery = "SELECT * FROM " + TABLE_CITIES 
+            + " WHERE ABS(" + COLUMN_LATITUDE + " - ?) < 0.01"
+            + " AND ABS(" + COLUMN_LONGITUDE + " - ?) < 0.01"
+            + " LIMIT 1";
+        
+        Cursor cursor = db.rawQuery(selectQuery, new String[] { 
+            String.valueOf(latitude), 
+            String.valueOf(longitude) 
+        });
+
+        City city = null;
+        if (cursor != null && cursor.moveToFirst()) {
+            city = new City(
+                cursor.getInt(0),
+                cursor.getString(1),
+                cursor.getString(2),
+                cursor.getDouble(3),
+                cursor.getDouble(4),
+                cursor.getInt(5) == 1);
+            cursor.close();
+        }
+        db.close();
+        return city;
+    }
 }

@@ -34,7 +34,6 @@ public class WeatherPageFragment extends Fragment {
     private TextView tvLocationName;
     private TextView tvCurrentTemp;
     private TextView tvWeatherCondition;
-    private TextView tvLocationPermission;
     private RecyclerView rvHourlyForecast;
     private HourlyForecastAdapter hourlyForecastAdapter;
     private final List<HourlyForecast> hourlyForecasts = new ArrayList<>();
@@ -101,7 +100,6 @@ public class WeatherPageFragment extends Fragment {
         tvLocationName = view.findViewById(R.id.tvLocationName);
         tvCurrentTemp = view.findViewById(R.id.tvCurrentTemp);
         tvWeatherCondition = view.findViewById(R.id.tvWeatherCondition);
-        tvLocationPermission = view.findViewById(R.id.tvLocationPermission);
         rvHourlyForecast = view.findViewById(R.id.rvHourlyForecast);
 
         tvUvValue = view.findViewById(R.id.tvUvValue);
@@ -164,6 +162,7 @@ public class WeatherPageFragment extends Fragment {
         if (current == null) {
             return;
         }
+
 
         double tempC = current.optDouble("temperature_2m", Double.NaN);
         double apparentC = current.optDouble("apparent_temperature", tempC);
@@ -251,6 +250,8 @@ public class WeatherPageFragment extends Fragment {
             // Top summary
             if (!Double.isNaN(tempC)) {
                 tvCurrentTemp.setText(formatTempNoUnit(tempC));
+            } else {
+                tvCurrentTemp.setText("--°");
             }
 
             tvWeatherCondition.setText(conditionFinal + "  " + highFinal + "/" + lowFinal);
@@ -263,24 +264,38 @@ public class WeatherPageFragment extends Fragment {
             }
 
             // Humidity
-            tvHumidityValue.setText(humidityFinal + "%");
-            if (pbHumidity != null) {
-                pbHumidity.setProgress(humidityFinal);
+            if (humidityFinal > 0) {
+                tvHumidityValue.setText(humidityFinal + "%");
+                if (pbHumidity != null) {
+                    pbHumidity.setProgress(humidityFinal);
+                }
+            } else {
+                tvHumidityValue.setText("--%");
+                if (pbHumidity != null) {
+                    pbHumidity.setProgress(0);
+                }
             }
 
             // Real feel (apparent temp)
             if (!Double.isNaN(apparentC)) {
                 tvRealFeelValue.setText(formatTempNoUnit(apparentC));
+            } else {
+                tvRealFeelValue.setText("--°");
             }
             if (pbRealFeel != null) {
                 pbRealFeel.setProgress(realFeelProgressFinal);
             }
 
             // Wind
-            tvWindValue.setText(UnitConverter.formatWindSpeed(getContext(), windSpeedKmh));
-            tvWindDirection.setText(windDirectionToCardinal(windDirFinal));
-            if (ivWindNeedle != null) {
-                ivWindNeedle.setRotation(windDirFinal);
+            if (windSpeedKmh > 0) {
+                tvWindValue.setText(UnitConverter.formatWindSpeed(getContext(), windSpeedKmh));
+                tvWindDirection.setText(windDirectionToCardinal(windDirFinal));
+                if (ivWindNeedle != null) {
+                    ivWindNeedle.setRotation(windDirFinal);
+                }
+            } else {
+                tvWindValue.setText("--");
+                tvWindDirection.setText("--");
             }
 
             // Sunrise / Sunset
@@ -295,10 +310,21 @@ public class WeatherPageFragment extends Fragment {
             }
 
             // Pressure
-            tvPressureValue.setText(String.valueOf(pressureHpa));
+            if (pressureHpa > 0) {
+                tvPressureValue.setText(String.valueOf(pressureHpa));
+            } else {
+                tvPressureValue.setText("--");
+            }
 
-            if (hourlyForecastAdapter != null && hourlyListFinal != null && !hourlyListFinal.isEmpty()) {
-                hourlyForecastAdapter.setHourlyForecasts(hourlyListFinal);
+            if (hourlyForecastAdapter != null) {
+                if (hourlyListFinal != null && !hourlyListFinal.isEmpty()) {
+                    Log.d(TAG, "Updating hourly forecast adapter with " + hourlyListFinal.size() + " items");
+                    hourlyForecastAdapter.setHourlyForecasts(hourlyListFinal);
+                } else {
+                    Log.w(TAG, "Hourly forecast list is empty or null");
+                }
+            } else {
+                Log.e(TAG, "Hourly forecast adapter is null!");
             }
         });
     }
@@ -359,22 +385,60 @@ public class WeatherPageFragment extends Fragment {
     }
 
     private List<HourlyForecast> build24HourForecasts(JSONObject hourly, String currentTimeIso) {
-        if (hourly == null) return new ArrayList<>();
+        if (hourly == null) {
+            Log.w(TAG, "Hourly data is null");
+            return new ArrayList<>();
+        }
 
         JSONArray times = hourly.optJSONArray("time");
         JSONArray temps = hourly.optJSONArray("temperature_2m");
         JSONArray codes = hourly.optJSONArray("weather_code");
         JSONArray windSpeeds = hourly.optJSONArray("wind_speed_10m");
-        if (times == null || temps == null || codes == null || windSpeeds == null) return new ArrayList<>();
+        
+        if (times == null || temps == null || codes == null || windSpeeds == null) {
+            Log.w(TAG, "Hourly arrays are null - times: " + (times != null) + 
+                      ", temps: " + (temps != null) + 
+                      ", codes: " + (codes != null) + 
+                      ", windSpeeds: " + (windSpeeds != null));
+            return new ArrayList<>();
+        }
+        
+        Log.d(TAG, "Building 24h forecast - times count: " + times.length() + 
+                  ", currentTime: " + currentTimeIso);
 
         int start = 0;
-        boolean startIsActualNow = false;
-        if (currentTimeIso != null && !currentTimeIso.isEmpty()) {
-            for (int i = 0; i < times.length(); i++) {
-                if (currentTimeIso.equals(times.optString(i, ""))) {
-                    start = i;
-                    startIsActualNow = true;
-                    break;
+        
+        // Find the index of current time, then start from the next hour
+        if (currentTimeIso != null && !currentTimeIso.isEmpty() && times.length() > 0) {
+            long currentTimeMillis = parseIsoToMillis(currentTimeIso);
+            if (currentTimeMillis > 0) {
+                long minDiff = Long.MAX_VALUE;
+                int currentIndex = -1;
+                
+                // Find the index closest to current time
+                for (int i = 0; i < times.length(); i++) {
+                    String timeStr = times.optString(i, "");
+                    long timeMillis = parseIsoToMillis(timeStr);
+                    if (timeMillis > 0) {
+                        long diff = Math.abs(timeMillis - currentTimeMillis);
+                        if (diff < minDiff) {
+                            minDiff = diff;
+                            currentIndex = i;
+                        }
+                        // Also check for exact match
+                        if (currentTimeIso.equals(timeStr)) {
+                            currentIndex = i;
+                            break;
+                        }
+                    }
+                }
+                
+                // Start from the next hour after current time
+                if (currentIndex >= 0 && currentIndex + 1 < times.length()) {
+                    start = currentIndex + 1;
+                } else if (currentIndex >= 0) {
+                    // If we're at the last index, start from there
+                    start = currentIndex;
                 }
             }
         }
@@ -383,19 +447,18 @@ public class WeatherPageFragment extends Fragment {
         // shift the window back so we can still render 24 items.
         if (times.length() >= 24 && start + 24 > times.length()) {
             start = Math.max(0, times.length() - 24);
-            // If we shifted, the first item is no longer "Now"
-            startIsActualNow = false;
         }
 
         int end = Math.min(start + 24, times.length());
         List<HourlyForecast> list = new ArrayList<>();
+        Log.d(TAG, "Building forecast from index " + start + " to " + end + " (starting from next hour)");
+        
         for (int i = start; i < end; i++) {
             double tempC = temps.optDouble(i, Double.NaN);
             String tempStr = Double.isNaN(tempC) ? "--°" : formatTempNoUnit(tempC);
 
-            String timeLabel = (i == start && startIsActualNow)
-                    ? getString(R.string.now)
-                    : isoToHHmm(times.optString(i, ""));
+            // Always show time in HH:mm format (no "Now" label since we start from next hour)
+            String timeLabel = isoToHHmm(times.optString(i, ""));
 
             double windKmh = windSpeeds.optDouble(i, 0.0);
             String windStr = UnitConverter.formatWindSpeed(getContext(), windKmh);
@@ -405,7 +468,49 @@ public class WeatherPageFragment extends Fragment {
 
             list.add(new HourlyForecast(tempStr, timeLabel, windStr, iconRes));
         }
+        
+        Log.d(TAG, "Built " + list.size() + " hourly forecast items");
         return list;
+    }
+
+    /**
+     * Parse ISO 8601 datetime string to milliseconds since epoch.
+     * Format: "2024-01-01T12:00" or "2024-01-01T12:00:00" or "2024-01-01T12:00:00Z"
+     */
+    private long parseIsoToMillis(String iso) {
+        if (iso == null || iso.isEmpty()) return 0;
+        try {
+            // Remove timezone info if present (Z or +HH:MM)
+            String cleanIso = iso;
+            int zIndex = cleanIso.indexOf('Z');
+            if (zIndex > 0) {
+                cleanIso = cleanIso.substring(0, zIndex);
+            }
+            int plusIndex = cleanIso.indexOf('+');
+            if (plusIndex > 0) {
+                cleanIso = cleanIso.substring(0, plusIndex);
+            }
+            int minusIndex = cleanIso.indexOf('-', 10); // Skip date part
+            if (minusIndex > 0) {
+                cleanIso = cleanIso.substring(0, minusIndex);
+            }
+            
+            // Ensure we have at least "YYYY-MM-DDTHH:MM"
+            if (cleanIso.length() < 16) return 0;
+            
+            // Parse: "YYYY-MM-DDTHH:MM" or "YYYY-MM-DDTHH:MM:SS"
+            java.text.SimpleDateFormat sdf;
+            if (cleanIso.length() >= 19) {
+                sdf = new java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", java.util.Locale.US);
+            } else {
+                sdf = new java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm", java.util.Locale.US);
+            }
+            sdf.setTimeZone(java.util.TimeZone.getTimeZone("UTC"));
+            return sdf.parse(cleanIso).getTime();
+        } catch (Exception e) {
+            Log.e(TAG, "Error parsing ISO datetime: " + iso, e);
+            return 0;
+        }
     }
 
     private int weatherCodeToIconRes(int weatherCode) {
@@ -422,11 +527,17 @@ public class WeatherPageFragment extends Fragment {
     }
 
     private void setupHourlyForecast() {
-        hourlyForecastAdapter = new HourlyForecastAdapter(hourlyForecasts);
+        if (getContext() == null || rvHourlyForecast == null) {
+            Log.e(TAG, "Cannot setup hourly forecast - context or RecyclerView is null");
+            return;
+        }
+        
+        hourlyForecastAdapter = new HourlyForecastAdapter(new ArrayList<>());
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL,
                 false);
         rvHourlyForecast.setLayoutManager(layoutManager);
         rvHourlyForecast.setAdapter(hourlyForecastAdapter);
+        Log.d(TAG, "Hourly forecast RecyclerView setup completed");
     }
 
     /**
