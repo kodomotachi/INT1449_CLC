@@ -254,7 +254,12 @@ public class WeatherPageFragment extends Fragment {
                 tvCurrentTemp.setText("--°");
             }
 
-            tvWeatherCondition.setText(conditionFinal + "  " + highFinal + "/" + lowFinal);
+            // Show current temperature instead of high/low range
+            if (!Double.isNaN(tempC)) {
+                tvWeatherCondition.setText(conditionFinal + "  " + formatTempNoUnit(tempC));
+            } else {
+                tvWeatherCondition.setText(conditionFinal + "  --°");
+            }
 
             // UV
             tvUvValue.setText(uvLevel(uvIndexFinal));

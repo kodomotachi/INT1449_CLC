@@ -24,20 +24,20 @@
         "source": "/Users/kodomotachi/.gradle/daemon/8.13/com.example.weatherapp-main-37:/drawable/ic_cloud.xml"
     },
     {
-        "merged": "/Users/kodomotachi/.gradle/daemon/8.13/com.example.weatherapp-debug-35:/drawable_ic_sunset.xml.flat",
-        "source": "/Users/kodomotachi/.gradle/daemon/8.13/com.example.weatherapp-main-37:/drawable/ic_sunset.xml"
-    },
-    {
         "merged": "/Users/kodomotachi/.gradle/daemon/8.13/com.example.weatherapp-debug-35:/layout_activity_settings.xml.flat",
         "source": "/Users/kodomotachi/.gradle/daemon/8.13/com.example.weatherapp-main-37:/layout/activity_settings.xml"
     },
     {
-        "merged": "/Users/kodomotachi/.gradle/daemon/8.13/com.example.weatherapp-debug-35:/drawable_ring_progress_blue.xml.flat",
-        "source": "/Users/kodomotachi/.gradle/daemon/8.13/com.example.weatherapp-main-37:/drawable/ring_progress_blue.xml"
+        "merged": "/Users/kodomotachi/.gradle/daemon/8.13/com.example.weatherapp-debug-35:/drawable_ic_sunset.xml.flat",
+        "source": "/Users/kodomotachi/.gradle/daemon/8.13/com.example.weatherapp-main-37:/drawable/ic_sunset.xml"
     },
     {
         "merged": "/Users/kodomotachi/.gradle/daemon/8.13/com.example.weatherapp-debug-35:/mipmap-mdpi_ic_launcher_round.webp.flat",
         "source": "/Users/kodomotachi/.gradle/daemon/8.13/com.example.weatherapp-main-37:/mipmap-mdpi/ic_launcher_round.webp"
+    },
+    {
+        "merged": "/Users/kodomotachi/.gradle/daemon/8.13/com.example.weatherapp-debug-35:/drawable_ring_progress_blue.xml.flat",
+        "source": "/Users/kodomotachi/.gradle/daemon/8.13/com.example.weatherapp-main-37:/drawable/ring_progress_blue.xml"
     },
     {
         "merged": "/Users/kodomotachi/.gradle/daemon/8.13/com.example.weatherapp-debug-35:/drawable_ic_compass_bg.xml.flat",
@@ -168,12 +168,12 @@
         "source": "/Users/kodomotachi/.gradle/daemon/8.13/com.example.weatherapp-main-37:/mipmap-hdpi/ic_launcher_round.webp"
     },
     {
-        "merged": "/Users/kodomotachi/.gradle/daemon/8.13/com.example.weatherapp-debug-35:/drawable_ic_thermometer.xml.flat",
-        "source": "/Users/kodomotachi/.gradle/daemon/8.13/com.example.weatherapp-main-37:/drawable/ic_thermometer.xml"
-    },
-    {
         "merged": "/Users/kodomotachi/.gradle/daemon/8.13/com.example.weatherapp-debug-35:/drawable_ring_progress_green.xml.flat",
         "source": "/Users/kodomotachi/.gradle/daemon/8.13/com.example.weatherapp-main-37:/drawable/ring_progress_green.xml"
+    },
+    {
+        "merged": "/Users/kodomotachi/.gradle/daemon/8.13/com.example.weatherapp-debug-35:/drawable_ic_thermometer.xml.flat",
+        "source": "/Users/kodomotachi/.gradle/daemon/8.13/com.example.weatherapp-main-37:/drawable/ic_thermometer.xml"
     },
     {
         "merged": "/Users/kodomotachi/.gradle/daemon/8.13/com.example.weatherapp-debug-35:/drawable_card_background.xml.flat",

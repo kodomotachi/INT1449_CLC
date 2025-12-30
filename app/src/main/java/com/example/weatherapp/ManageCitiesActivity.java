@@ -412,15 +412,96 @@ public class ManageCitiesActivity extends AppCompatActivity {
         cities.clear();
         cities.addAll(dbHelper.getAllCities());
 
-        // Add sample weather data
-        for (City city : cities) {
-            city.setTemperature("28");
-            city.setWeatherCondition("Cloudy");
-            city.setHighTemp("30");
-            city.setLowTemp("24");
-        }
+        // Fetch weather data for all cities from API
+        fetchWeatherDataForAllCities();
 
         citiesAdapter.notifyDataSetChanged();
+    }
+
+    /**
+     * Fetch weather data from API for all cities in the list
+     */
+    private void fetchWeatherDataForAllCities() {
+        for (City city : cities) {
+            fetchWeatherDataForCity(city);
+        }
+    }
+
+    /**
+     * Fetch weather data for a single city and update its display
+     */
+    private void fetchWeatherDataForCity(City city) {
+        // Store city ID to find it later
+        final int cityId = city.getId();
+        
+        WeatherDataAPI.getDataByCoordinates(
+                this,
+                city.getLatitude(),
+                city.getLongitude(),
+                new WeatherDataAPI.ApiCallback() {
+                    @Override
+                    public void onSuccess(String response) {
+                        try {
+                            JSONObject weatherJson = new JSONObject(response);
+                            JSONObject current = weatherJson.getJSONObject("current");
+                            double temp = current.getDouble("temperature_2m");
+                            int weatherCode = current.optInt("weather_code", 0);
+
+                            // Get daily forecast for high/low temps
+                            double tempMax = temp;
+                            double tempMin = temp;
+                            if (weatherJson.has("daily")) {
+                                JSONObject daily = weatherJson.getJSONObject("daily");
+                                if (daily.has("temperature_2m_max")) {
+                                    JSONArray tempMaxArray = daily.getJSONArray("temperature_2m_max");
+                                    if (tempMaxArray.length() > 0) {
+                                        tempMax = tempMaxArray.getDouble(0);
+                                    }
+                                }
+                                if (daily.has("temperature_2m_min")) {
+                                    JSONArray tempMinArray = daily.getJSONArray("temperature_2m_min");
+                                    if (tempMinArray.length() > 0) {
+                                        tempMin = tempMinArray.getDouble(0);
+                                    }
+                                }
+                            }
+
+                            String weatherCondition = convertWeatherCodeToCondition(weatherCode);
+
+                            // Create final copies for use in lambda
+                            final double finalTemp = temp;
+                            final double finalTempMax = tempMax;
+                            final double finalTempMin = tempMin;
+                            final String finalWeatherCondition = weatherCondition;
+
+                            // Update city with weather data
+                            runOnUiThread(() -> {
+                                // Find city by ID to ensure we update the correct one
+                                City cityToUpdate = getCityById(cityId);
+                                if (cityToUpdate != null) {
+                                    cityToUpdate.setTemperature(String.valueOf((int) Math.round(finalTemp)));
+                                    cityToUpdate.setWeatherCondition(finalWeatherCondition);
+                                    cityToUpdate.setHighTemp(String.valueOf((int) Math.round(finalTempMax)));
+                                    cityToUpdate.setLowTemp(String.valueOf((int) Math.round(finalTempMin)));
+                                    
+                                    // Update the adapter to reflect changes
+                                    int position = cities.indexOf(cityToUpdate);
+                                    if (position >= 0) {
+                                        citiesAdapter.notifyItemChanged(position);
+                                    }
+                                }
+                            });
+
+                        } catch (JSONException e) {
+                            Log.e(TAG, "Error parsing weather data for " + city.getName() + ": " + e.getMessage(), e);
+                        }
+                    }
+
+                    @Override
+                    public void onError(String error) {
+                        Log.e(TAG, "Error fetching weather data for " + city.getName() + ": " + error);
+                    }
+                });
     }
 
     private void setupItemTouchHelper() {
@@ -560,9 +641,17 @@ public class ManageCitiesActivity extends AppCompatActivity {
         public void onBindViewHolder(@NonNull CityViewHolder holder, int position) {
             City city = cities.get(position);
             holder.tvCityName.setText(city.getName());
-            holder.tvCityWeather.setText(city.getWeatherCondition() + "  " +
-                    city.getHighTemp() + "° / " + city.getLowTemp() + "°");
-            holder.tvCityTemp.setText(city.getTemperature() + "°");
+            
+            // Show current temperature instead of high/low range
+            String currentTemp = city.getTemperature();
+            if (currentTemp != null && !currentTemp.isEmpty()) {
+                holder.tvCityWeather.setText(city.getWeatherCondition() + "  " + currentTemp + "°");
+            } else {
+                holder.tvCityWeather.setText(city.getWeatherCondition() != null ? city.getWeatherCondition() : "");
+            }
+            
+            holder.tvCityTemp.setText(city.getTemperature() != null && !city.getTemperature().isEmpty() 
+                    ? city.getTemperature() + "°" : "--°");
 
             // Show location pin for default city
             if (city.isDefault()) {

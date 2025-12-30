@@ -367,7 +367,7 @@
                         </FrameLayout>
                     </FrameLayout>
 
-                </LinearLayout>breathe
+                </LinearLayout>
             </androidx.cardview.widget.CardView>
 
             <!-- Sun (Sunrise/Sunset) Card -->
