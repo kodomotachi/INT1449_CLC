@@ -433,7 +433,7 @@ public class ManageCitiesActivity extends AppCompatActivity {
     private void fetchWeatherDataForCity(City city) {
         // Store city ID to find it later
         final int cityId = city.getId();
-        
+
         WeatherDataAPI.getDataByCoordinates(
                 this,
                 city.getLatitude(),
@@ -483,7 +483,7 @@ public class ManageCitiesActivity extends AppCompatActivity {
                                     cityToUpdate.setWeatherCondition(finalWeatherCondition);
                                     cityToUpdate.setHighTemp(String.valueOf((int) Math.round(finalTempMax)));
                                     cityToUpdate.setLowTemp(String.valueOf((int) Math.round(finalTempMin)));
-                                    
+
                                     // Update the adapter to reflect changes
                                     int position = cities.indexOf(cityToUpdate);
                                     if (position >= 0) {
@@ -641,7 +641,7 @@ public class ManageCitiesActivity extends AppCompatActivity {
         public void onBindViewHolder(@NonNull CityViewHolder holder, int position) {
             City city = cities.get(position);
             holder.tvCityName.setText(city.getName());
-            
+
             // Show current temperature instead of high/low range
             String currentTemp = city.getTemperature();
             if (currentTemp != null && !currentTemp.isEmpty()) {
@@ -649,9 +649,10 @@ public class ManageCitiesActivity extends AppCompatActivity {
             } else {
                 holder.tvCityWeather.setText(city.getWeatherCondition() != null ? city.getWeatherCondition() : "");
             }
-            
-            holder.tvCityTemp.setText(city.getTemperature() != null && !city.getTemperature().isEmpty() 
-                    ? city.getTemperature() + "°" : "--°");
+
+            holder.tvCityTemp.setText(city.getTemperature() != null && !city.getTemperature().isEmpty()
+                    ? city.getTemperature() + "°"
+                    : "--°");
 
             // Show location pin for default city
             if (city.isDefault()) {
