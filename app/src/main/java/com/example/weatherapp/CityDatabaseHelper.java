@@ -132,18 +132,6 @@ public class CityDatabaseHelper extends SQLiteOpenHelper {
         return cities;
     }
 
-    public int getCityCount() {
-        SQLiteDatabase db = this.getReadableDatabase();
-        Cursor cursor = db.rawQuery("SELECT COUNT(*) FROM " + TABLE_CITIES, null);
-        int count = 0;
-        if (cursor.moveToFirst()) {
-            count = cursor.getInt(0);
-        }
-        cursor.close();
-        db.close();
-        return count;
-    }
-
     public void deleteCity(int id) {
         SQLiteDatabase db = this.getWritableDatabase();
         db.delete(TABLE_CITIES, COLUMN_ID + "=?", new String[] { String.valueOf(id) });
@@ -179,17 +167,17 @@ public class CityDatabaseHelper extends SQLiteOpenHelper {
      */
     public void setDefaultCity(int cityId) {
         SQLiteDatabase db = this.getWritableDatabase();
-        
+
         // Set all cities to non-default first
         ContentValues values = new ContentValues();
         values.put(COLUMN_IS_DEFAULT, 0);
         db.update(TABLE_CITIES, values, null, null);
-        
+
         // Set the specified city as default
         values = new ContentValues();
         values.put(COLUMN_IS_DEFAULT, 1);
         db.update(TABLE_CITIES, values, COLUMN_ID + "=?", new String[] { String.valueOf(cityId) });
-        
+
         db.close();
     }
 
@@ -199,25 +187,25 @@ public class CityDatabaseHelper extends SQLiteOpenHelper {
     public City getCityByCoordinates(double latitude, double longitude) {
         SQLiteDatabase db = this.getReadableDatabase();
         // Use approximate matching (within 0.01 degrees, ~1km)
-        String selectQuery = "SELECT * FROM " + TABLE_CITIES 
-            + " WHERE ABS(" + COLUMN_LATITUDE + " - ?) < 0.01"
-            + " AND ABS(" + COLUMN_LONGITUDE + " - ?) < 0.01"
-            + " LIMIT 1";
-        
-        Cursor cursor = db.rawQuery(selectQuery, new String[] { 
-            String.valueOf(latitude), 
-            String.valueOf(longitude) 
+        String selectQuery = "SELECT * FROM " + TABLE_CITIES
+                + " WHERE ABS(" + COLUMN_LATITUDE + " - ?) < 0.01"
+                + " AND ABS(" + COLUMN_LONGITUDE + " - ?) < 0.01"
+                + " LIMIT 1";
+
+        Cursor cursor = db.rawQuery(selectQuery, new String[] {
+                String.valueOf(latitude),
+                String.valueOf(longitude)
         });
 
         City city = null;
         if (cursor != null && cursor.moveToFirst()) {
             city = new City(
-                cursor.getInt(0),
-                cursor.getString(1),
-                cursor.getString(2),
-                cursor.getDouble(3),
-                cursor.getDouble(4),
-                cursor.getInt(5) == 1);
+                    cursor.getInt(0),
+                    cursor.getString(1),
+                    cursor.getString(2),
+                    cursor.getDouble(3),
+                    cursor.getDouble(4),
+                    cursor.getInt(5) == 1);
             cursor.close();
         }
         db.close();

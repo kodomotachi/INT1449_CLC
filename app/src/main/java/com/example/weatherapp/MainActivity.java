@@ -6,15 +6,11 @@ import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.ImageButton;
-import android.widget.ImageView;
-import android.widget.Toast;
 
-import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
@@ -37,7 +33,6 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
-    private ImageView ivBackground;
     private ViewPager2 viewPager;
     private ImageButton btnAdd;
     private ImageButton btnMenu;
@@ -46,14 +41,13 @@ public class MainActivity extends AppCompatActivity {
     private List<City> cities;
     private WeatherPagerAdapter pagerAdapter;
     private LocationService locationService;
-    
+
     private static final String TAG = "MainActivity";
     private static final int PERMISSION_REQUEST_CODE = 1001;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        // EdgeToEdge.enable(this);
         setContentView(R.layout.activity_main);
 
         dbHelper = new CityDatabaseHelper(this);
@@ -75,15 +69,11 @@ public class MainActivity extends AppCompatActivity {
         // Setup click listeners
         setupClickListeners();
 
-        // Set background
-        setWeatherBackground("cloudy");
-
         // Check and request location permission (this will load cities after GPS)
         checkLocationPermission();
     }
 
     private void initializeViews() {
-        ivBackground = findViewById(R.id.ivBackground);
         viewPager = findViewById(R.id.viewPager);
         btnAdd = findViewById(R.id.btnAdd);
         btnMenu = findViewById(R.id.btnMenu);
@@ -130,18 +120,18 @@ public class MainActivity extends AppCompatActivity {
         } else {
             // Load cities first (fallback)
             loadCities();
-            
+
             // Request permission
             if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.ACCESS_FINE_LOCATION)) {
                 // Show explanation dialog
                 new AlertDialog.Builder(this)
-                    .setTitle("Location Permission")
-                    .setMessage("This app needs location permission to show weather for your current location.")
-                    .setPositiveButton("Grant", (dialog, which) -> {
-                        requestLocationPermission();
-                    })
-                    .setNegativeButton("Cancel", null)
-                    .show();
+                        .setTitle("Location Permission")
+                        .setMessage("This app needs location permission to show weather for your current location.")
+                        .setPositiveButton("Grant", (dialog, which) -> {
+                            requestLocationPermission();
+                        })
+                        .setNegativeButton("Cancel", null)
+                        .show();
             } else {
                 // Request permission directly
                 requestLocationPermission();
@@ -154,22 +144,22 @@ public class MainActivity extends AppCompatActivity {
      */
     private void requestLocationPermission() {
         ActivityCompat.requestPermissions(
-            this,
-            new String[]{
-                Manifest.permission.ACCESS_FINE_LOCATION,
-                Manifest.permission.ACCESS_COARSE_LOCATION
-            },
-            PERMISSION_REQUEST_CODE
-        );
+                this,
+                new String[] {
+                        Manifest.permission.ACCESS_FINE_LOCATION,
+                        Manifest.permission.ACCESS_COARSE_LOCATION
+                },
+                PERMISSION_REQUEST_CODE);
     }
 
     /**
      * Handle permission request result
      */
     @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
+            @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        
+
         if (requestCode == PERMISSION_REQUEST_CODE) {
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 // Permission granted, get GPS location
@@ -197,7 +187,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onLocationReceived(double latitude, double longitude) {
                 Log.d(TAG, "GPS Location received: " + latitude + ", " + longitude);
-                
+
                 // Check if city with these coordinates already exists
                 City existingCity = dbHelper.getCityByCoordinates(latitude, longitude);
                 if (existingCity != null) {
@@ -214,10 +204,10 @@ public class MainActivity extends AppCompatActivity {
                         try {
                             JSONObject place = result.getJSONObject(0);
                             JSONObject address = place.optJSONObject("address");
-                            
+
                             String cityName = "";
                             String country = "";
-                            
+
                             if (address != null) {
                                 // Try to get city name from various fields
                                 cityName = address.optString("city", "");
@@ -233,10 +223,10 @@ public class MainActivity extends AppCompatActivity {
                                 if (cityName.isEmpty()) {
                                     cityName = address.optString("county", "");
                                 }
-                                
+
                                 country = address.optString("country", "");
                             }
-                            
+
                             // Fallback to display_name if address not available
                             if (cityName.isEmpty()) {
                                 String displayName = place.optString("display_name", "");
@@ -250,23 +240,23 @@ public class MainActivity extends AppCompatActivity {
                                     }
                                 }
                             }
-                            
+
                             // Use "Current Location" as fallback
                             if (cityName.isEmpty()) {
                                 cityName = "Current Location";
                             }
-                            
+
                             // Create city from GPS location
                             City gpsCity = new City(cityName, country, latitude, longitude);
                             gpsCity.setDefault(true);
-                            
+
                             // Add GPS city to database first
                             long id = dbHelper.addCity(gpsCity);
                             gpsCity.setId((int) id);
-                            
+
                             // Set as default (this will clear other defaults)
                             dbHelper.setDefaultCity((int) id);
-                            
+
                             // Reload cities and update UI
                             runOnUiThread(() -> {
                                 loadCities();
@@ -275,7 +265,7 @@ public class MainActivity extends AppCompatActivity {
                                     viewPager.setCurrentItem(0, false);
                                 }
                             });
-                            
+
                         } catch (JSONException e) {
                             Log.e(TAG, "Error parsing reverse geocode: " + e.getMessage());
                             // Create city with coordinates only
@@ -307,14 +297,14 @@ public class MainActivity extends AppCompatActivity {
     private void createCityFromCoordinates(double latitude, double longitude) {
         City gpsCity = new City("Current Location", "", latitude, longitude);
         gpsCity.setDefault(true);
-        
+
         // Add GPS city to database first
         long id = dbHelper.addCity(gpsCity);
         gpsCity.setId((int) id);
-        
+
         // Set as default (this will clear other defaults)
         dbHelper.setDefaultCity((int) id);
-        
+
         // Reload cities and update UI
         runOnUiThread(() -> {
             loadCities();
@@ -334,26 +324,6 @@ public class MainActivity extends AppCompatActivity {
             Intent intent = new Intent(MainActivity.this, SettingsActivity.class);
             startActivity(intent);
         });
-    }
-
-    private void setWeatherBackground(String condition) {
-        switch (condition.toLowerCase()) {
-            case "sunny":
-                ivBackground.setBackgroundColor(ContextCompat.getColor(this, R.color.blue_accent));
-                break;
-            case "rainy":
-                ivBackground.setBackgroundColor(ContextCompat.getColor(this, R.color.text_gray));
-                break;
-            case "cloudy":
-                ivBackground.setBackgroundColor(ContextCompat.getColor(this, R.color.blue_accent));
-                break;
-            case "snowy":
-                ivBackground.setBackgroundColor(ContextCompat.getColor(this, R.color.light_gray));
-                break;
-            default:
-                ivBackground.setBackgroundColor(ContextCompat.getColor(this, R.color.blue_accent));
-                break;
-        }
     }
 
     @Override

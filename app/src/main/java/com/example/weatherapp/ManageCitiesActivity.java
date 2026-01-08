@@ -137,14 +137,6 @@ public class ManageCitiesActivity extends AppCompatActivity {
      * 
      * @param query The search query string
      */
-    // protected void onSearchQueryChanged(String query) {
-    // // TODO: Backend should implement this to fetch city suggestions
-    // // Example: Call your API with the query and then call
-    // onSuggestionsReceived() with results
-    // Log.d(TAG, "Search query: " + query);
-    // }
-
-    // @Override
     protected void onSearchQueryChanged(String query) {
         // Log để kiểm tra query
         Log.d(TAG, "Search query: " + query);
